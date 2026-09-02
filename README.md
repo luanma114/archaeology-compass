@@ -1,25 +1,43 @@
+# 考古罗盘（Archaeology Compass）
 
-Installation information
-=======
+面向 NeoForge、Minecraft `1.21.1` 的考古定位模组。
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+考古罗盘会在已加载区块中寻找可考古方块，并像原版指南针一样指向最近有效目标。找不到目标时，指针持续旋转。
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+## 功能
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+- 默认定位仍有未刷出战利品的可疑沙子和可疑沙砾。
+- 指向扫描范围内最近有效目标。
+- 目标被刷空、挖掘、超出范围或切换维度后自动失效并重新搜索。
+- 仅搜索已加载区块，不会为扫描强制加载区块。
+- 扫描半径、垂直范围、扫描间隔和单 Tick 检查预算可由服务端配置。
+- 使用数据包方块标签扩展目标方块，便于整合包和其他模组兼容。
+- 支持独立服务端与多人联机；服务端负责搜索和目标判定，客户端仅显示指针。
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+## 支持版本
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+首发目标：
+
+- Minecraft `1.21.1`
+- NeoForge：使用工程 `gradle.properties` 中声明的兼容版本
+- Java `21`
+
+后续 Minecraft 版本会独立构建、测试和发布，不使用同一个 JAR 跨版本运行。
+
+## 开发
+
+```bat
+gradlew.bat runClient
+gradlew.bat runServer
+gradlew.bat build
+```
+
+构建产物位于 `build/libs/`。
+
+## 文档
+
+完整需求、架构、性能、联机同步与发布规范见：[开发文档](docs/NeoForge_MC模组开发文档.md)。
+
+## 许可
+
+许可证待定。发布前请在 `LICENSE` 中明确许可证文本。
