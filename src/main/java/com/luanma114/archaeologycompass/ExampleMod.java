@@ -47,8 +47,8 @@ public final class ExampleMod {
     /**
      * 考古罗盘物品注册对象。
      *
-     * <p>物品注册已完成。服务端目标扫描与客户端同步已由独立模块实现；
-     * 后续仅需补充物品模型、纹理、指针角度计算和交互内容。</p>
+     * <p>物品注册、服务端目标扫描、原版指南针动态指针和客户端目标同步已完成。
+     * 当前模型继承 {@code minecraft:item/compass}，正式发布前可替换为保持相同指向逻辑的自制外观。</p>
      */
     public static final DeferredItem<Item> ARCHAEOLOGY_COMPASS = ITEMS.registerSimpleItem(
             "archaeology_compass",
