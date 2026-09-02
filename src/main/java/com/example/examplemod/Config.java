@@ -1,42 +1,36 @@
 package com.example.examplemod;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.config.ModConfigEvent;
+// NeoForge：声明配置项、默认值和允许范围，并在服务器读取配置文件时自动校验。
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-// An example config class. This is not required, but it's a good idea to have one to keep your config organized.
-// Demonstrates how to use Neo's config APIs
-public class Config {
+/**
+ * 考古罗盘服务端配置定义。
+ *
+ * <p>所有值由服务端加载和控制。单人世界中集成服务端同样使用此配置，联机时客户端不应将其作为权威扫描规则。</p>
+ */
+public final class Config {
+    /** 用于构建并约束配置项的 NeoForge builder。 */
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    public static final ModConfigSpec.BooleanValue LOG_DIRT_BLOCK = BUILDER
-            .comment("Whether to log the dirt block on common setup")
-            .define("logDirtBlock", true);
+    /** 玩家 X/Z 平面上的扫描半径，单位为方块。限制上限避免过大扫描区域。 */
+    public static final ModConfigSpec.IntValue HORIZONTAL_RADIUS = BUILDER
+            .comment("Horizontal scan radius in blocks.")
+            .defineInRange("horizontalRadius", 64, 1, 128);
 
-    public static final ModConfigSpec.IntValue MAGIC_NUMBER = BUILDER
-            .comment("A magic number")
-            .defineInRange("magicNumber", 42, 0, Integer.MAX_VALUE);
+    /** 玩家上下方向的扫描半径，单位为方块。 */
+    public static final ModConfigSpec.IntValue VERTICAL_RADIUS = BUILDER
+            .comment("Vertical scan radius in blocks.")
+            .defineInRange("verticalRadius", 32, 1, 64);
 
-    public static final ModConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = BUILDER
-            .comment("What you want the introduction message to be for the magic number")
-            .define("magicNumberIntroduction", "The magic number is... ");
+    /** 两次完整扫描之间的最小 Tick 间隔。20 Tick 通常约等于一秒。 */
+    public static final ModConfigSpec.IntValue SCAN_INTERVAL_TICKS = BUILDER
+            .comment("Ticks between full scans.")
+            .defineInRange("scanIntervalTicks", 20, 1, 1200);
 
-    // a list of strings that are treated as resource locations for items
-    public static final ModConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER
-            .comment("A list of items to log on common setup.")
-            .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "", Config::validateItemName);
+    /** 注册给 NeoForge 的完整服务端配置规范。 */
+    public static final ModConfigSpec SPEC = BUILDER.build();
 
-    static final ModConfigSpec SPEC = BUILDER.build();
-
-    private static boolean validateItemName(final Object obj) {
-        return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
+    /** 工具类不允许实例化。 */
+    private Config() {
     }
 }
