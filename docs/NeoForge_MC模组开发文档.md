@@ -1,5 +1,54 @@
 # NeoForge Minecraft 模组开发文档
 
+## 考古罗盘：当前实现状态（2026-09-02）
+
+### 已实现
+
+| 模块 | 实现 |
+| --- | --- |
+| 目标版本 | Minecraft `1.21.1`、NeoForge `21.1.235`、Java `21` |
+| Mod ID / 包名 | `archaeologycompass` / `com.luanma114.archaeologycompass` |
+| 物品与本地化 | 注册 `archaeology_compass`；加入“工具与实用物品”创造模式标签页；含中英文名称 |
+| 生存获取 | 有序配方：中心指南针、上下刷子、左右铜锭，产出 1 个考古罗盘 |
+| 目标数据 | `archaeology_targets` 方块标签默认包含可疑沙子和可疑沙砾 |
+| 有效性 | 目标须为 `BrushableBlockEntity`；保存数据含 `loot_table` 或 `item`。首次刷扫后出现 `item` 仍保持定位，完全刷空后停止定位 |
+| 扫描 | 服务端仅遍历已加载区块的方块实体，不强制加载区块；选择水平范围、垂直范围内最近目标 |
+| 配置 | 服务端可配置 `horizontalRadius`、`verticalRadius`、`scanIntervalTicks` |
+| 状态与同步 | 按玩家 UUID 缓存目标；目标变化、无目标、放下罗盘、登录、换维度时同步；退出时清理缓存 |
+| 动态指针 | 复用原版 `LodestoneTracker` 数据组件和 `minecraft:item/compass` 模型。服务端把目标写入主手/副手考古罗盘，原版 32 帧指南针自动指向目标；无目标写入空磁石目标以显示旋转状态 |
+| 网络隔离 | 网络层仅依赖无渲染 API 的 `ArchaeologyCompassClientState`。未来模型/渲染代码必须在独立 `Dist.CLIENT` 类中读取该状态 |
+| 验证 | `gradlew.bat build` 成功；开发客户端启动时曾因空 `@EventBusSubscriber` 崩溃，已移除该标注并修复 |
+
+### 当前代码结构
+
+```text
+src/main/java/com/luanma114/archaeologycompass/
+├─ ExampleMod.java                       模组入口、物品注册、配置与网络注册
+├─ Config.java                           服务端扫描配置
+├─ ArchaeologyCompassEvents.java         扫描、有效性判定、罗盘组件写入、玩家生命周期处理
+├─ ArchaeologyCompassTargetState.java    服务端每玩家目标缓存
+├─ ArchaeologyCompassTargetPayload.java  S2C 目标状态包与编解码
+├─ ArchaeologyCompassNetwork.java        网络包注册与发送
+└─ ArchaeologyCompassClientState.java    无客户端渲染依赖的同步目标状态
+
+src/main/resources/
+├─ assets/archaeologycompass/
+│  ├─ lang/en_us.json
+│  ├─ lang/zh_cn.json
+│  └─ models/item/archaeology_compass.json  继承原版动态指南针模型
+└─ data/archaeologycompass/
+   ├─ recipes/archaeology_compass.json
+   └─ tags/blocks/archaeology_targets.json
+```
+
+### 已知限制与后续工作
+
+1. 尚未完成游戏内人工验收。必须测试配方、目标指向、无目标旋转、刷扫中途、完全刷空、放下罗盘、登录、换维度。
+2. 尚未完成独立服务端与双客户端联机测试。
+3. 扫描已改为方块实体遍历，但大量已加载区块或大量玩家时仍应进行 TPS 压力测试；必要时增加分帧预算或区块索引。
+4. 当前使用原版指南针外观作为开发占位。正式发布前可替换为自制模型和纹理；替换时需保持对 `LodestoneTracker` 指向逻辑的支持，或实现等价客户端模型属性。
+5. `ArchaeologyCompassClientState` 当前不含渲染 API。未来任何 `Minecraft`、`ItemProperties`、模型或渲染器引用必须放进 `Dist.CLIENT` 专属类，通用网络类不得直接引用。
+
 ## 考古罗盘：功能需求规格
 
 ### 功能目标

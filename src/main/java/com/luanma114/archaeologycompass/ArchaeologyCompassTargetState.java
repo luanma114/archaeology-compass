@@ -1,4 +1,4 @@
-package com.example.examplemod;
+package com.luanma114.archaeologycompass;
 
 // Java：按玩家 UUID 保存目标，避免直接持有会在玩家离线后失效的 ServerPlayer 引用。
 import java.util.HashMap;

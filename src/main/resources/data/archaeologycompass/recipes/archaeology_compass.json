@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " B ",
+    "CXC",
+    " B "
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:brush"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "X": {
+      "item": "minecraft:compass"
+    }
+  },
+  "result": {
+    "id": "archaeologycompass:archaeology_compass",
+    "count": 1
+  }
+}

@@ -1,4 +1,4 @@
-package com.example.examplemod;
+package com.luanma114.archaeologycompass;
 
 // Minecraft：坐标、注册表、资源 ID、标签、物品、维度和方块类型。
 import net.minecraft.core.BlockPos;
@@ -47,7 +47,8 @@ public final class ExampleMod {
     /**
      * 考古罗盘物品注册对象。
      *
-     * <p>当前仅完成物品注册。指针渲染、服务端目标同步和交互逻辑将在后续模块实现。</p>
+     * <p>物品注册已完成。服务端目标扫描与客户端同步已由独立模块实现；
+     * 后续仅需补充物品模型、纹理、指针角度计算和交互内容。</p>
      */
     public static final DeferredItem<Item> ARCHAEOLOGY_COMPASS = ITEMS.registerSimpleItem(
             "archaeology_compass",
@@ -63,6 +64,7 @@ public final class ExampleMod {
     public ExampleMod(IEventBus modBus, ModContainer modContainer) {
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
+        modBus.addListener(ArchaeologyCompassNetwork::registerPayloads);
         modContainer.registerConfig(ModConfig.Type.SERVER, Config.SPEC);
     }
 
@@ -77,7 +79,7 @@ public final class ExampleMod {
      * 表示一次扫描选出的目标位置。
      *
      * <p>维度与坐标必须同时保存，防止玩家换维度后将相同坐标误认为原目标。
-     * 当前扫描原型创建此值但未缓存或同步，后续目标状态模块将负责保存和发送。</p>
+     * 服务端目标缓存保存此值，并在变化时同步到对应客户端；客户端模型模块后续读取该值计算指针角度。</p>
      */
     public record Target(ResourceKey<Level> dimension, BlockPos position) {
     }

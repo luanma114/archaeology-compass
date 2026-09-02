@@ -1,4 +1,4 @@
-package com.example.examplemod;
+package com.luanma114.archaeologycompass;
 
 // NeoForge：声明配置项、默认值和允许范围，并在服务器读取配置文件时自动校验。
 import net.neoforged.neoforge.common.ModConfigSpec;

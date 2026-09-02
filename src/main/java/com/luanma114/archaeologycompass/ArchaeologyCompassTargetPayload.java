@@ -1,4 +1,4 @@
-package com.example.examplemod;
+package com.luanma114.archaeologycompass;
 
 // Minecraft：网络包类型、坐标和维度注册表编码器。
 import net.minecraft.core.BlockPos;
