@@ -36,7 +36,7 @@ public final class ExampleMod {
     /**
      * 可作为考古罗盘候选目标的方块标签。
      *
-     * <p>定义文件位于 {@code data/archaeologycompass/tags/blocks/archaeology_targets.json}。
+     * <p>定义文件位于 {@code data/archaeologycompass/tags/block/archaeology_targets.json}。
      * 整合包或其他模组可扩展此标签，无需修改 Java 代码。</p>
      */
     public static final TagKey<Block> ARCHAEOLOGY_TARGETS = TagKey.create(
@@ -50,8 +50,8 @@ public final class ExampleMod {
     /**
      * 考古罗盘物品注册对象。
      *
-     * <p>物品注册、服务端目标扫描、原版指南针动态指针和客户端目标同步已完成。
-     * 当前模型继承 {@code minecraft:item/compass}，正式发布前可替换为保持相同指向逻辑的自制外观。</p>
+     * <p>物品注册、服务端目标扫描、客户端指针渲染和目标同步已完成。
+     * 当前模型为含 32 帧 {@code minecraft:angle} override 的原版指南针外观，正式发布前可替换为保持相同指向逻辑的自制外观。</p>
      */
     public static final DeferredItem<Item> ARCHAEOLOGY_COMPASS = ITEMS.registerSimpleItem(
             "archaeology_compass",

@@ -28,6 +28,16 @@ public final class ArchaeologyCompassClientState {
         return target;
     }
 
+    /**
+     * 清空本地目标。
+     *
+     * <p>玩家断开连接或切换世界时由客户端事件调用，避免残留上一个存档/服务器的目标，
+     * 使指针在进入新世界且尚未收到新 S2C 包前错误指向旧坐标。</p>
+     */
+    public static void reset() {
+        target = null;
+    }
+
     /** 工具类不允许实例化。 */
     private ArchaeologyCompassClientState() {
     }
