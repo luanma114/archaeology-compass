@@ -39,8 +39,8 @@ src/main/resources/
 │  ├─ lang/zh_cn.json
 │  └─ models/item/archaeology_compass.json  继承原版动态指南针模型
 └─ data/archaeologycompass/
-   ├─ recipes/archaeology_compass.json
-   └─ tags/blocks/archaeology_targets.json
+   ├─ recipe/archaeology_compass.json
+   └─ tags/block/archaeology_targets.json
 ```
 
 ### 已知限制与后续工作
@@ -79,7 +79,7 @@ src/main/resources/
 文件位置：
 
 ```text
-src/main/resources/data/<mod_id>/tags/blocks/archaeology_targets.json
+src/main/resources/data/<mod_id>/tags/block/archaeology_targets.json
 ```
 
 ### 定位与锁定规则
@@ -133,7 +133,7 @@ src/main/resources/data/<mod_id>/tags/blocks/archaeology_targets.json
 翻译键：item.<mod_id>.archaeology_compass
 模型：按锁定的精确 Minecraft/NeoForge 版本实现
 纹理：assets/<mod_id>/textures/item/archaeology_compass.png
-方块标签：data/<mod_id>/tags/blocks/archaeology_targets.json
+方块标签：data/<mod_id>/tags/block/archaeology_targets.json
 ```
 
 物品需加入创造模式标签页，并添加合成配方和中英文翻译。
@@ -250,10 +250,10 @@ src/main/
    │  ├─ blockstates/
    │  └─ sounds.json
    └─ data/my_mod/
-      ├─ recipes/
-      ├─ loot_tables/
+      ├─ recipe/
+      ├─ loot_table/
       ├─ tags/
-      └─ advancements/
+      └─ advancement/
 ```
 
 职责分离：

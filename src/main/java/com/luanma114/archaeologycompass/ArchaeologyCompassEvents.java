@@ -179,8 +179,9 @@ public final class ArchaeologyCompassEvents {
     /**
      * 判断候选方块是否仍可考古。
      *
-     * <p>原版首次刷扫后会把 {@code loot_table} 替换为 {@code item}，但在物品完全刷出前仍可继续考古。
-     * 因此任一键存在都有效；二者都不存在时，方块已刷空，不再定位。</p>
+     * <p>原版 {@link BrushableBlockEntity} 的 NBT 键为 {@code LootTable}（首字母大写）与 {@code item}。
+     * 未刷扫时含 {@code LootTable}，首次刷扫后替换为 {@code item}，物品完全刷出后二者都消失。
+     * 因此任一键存在都有效；都不存在时方块已刷空，不再定位。</p>
      *
      * <p>第三方方块必须同时加入目标标签且使用原版 {@link BrushableBlockEntity}。这避免将仅名称相似、
      * 却没有考古状态的方块误判为目标。</p>
@@ -192,7 +193,7 @@ public final class ArchaeologyCompassEvents {
         }
 
         CompoundTag data = brushable.saveWithoutMetadata(level.registryAccess());
-        return data.contains("loot_table") || data.contains("item");
+        return data.contains("LootTable") || data.contains("item");
     }
 
     /** 工具类不允许实例化。 */
