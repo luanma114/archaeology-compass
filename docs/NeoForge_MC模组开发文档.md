@@ -15,8 +15,8 @@
 | 扫描 | 服务端仅遍历已加载区块的方块实体，不强制加载区块；选择水平范围、垂直范围内最近目标 |
 | 配置 | 服务端可配置 `horizontalRadius`、`verticalRadius`、`scanIntervalTicks` |
 | 状态与同步 | 按玩家 UUID 缓存目标；目标变化、无目标、放下罗盘、登录、换维度时同步；退出时清理缓存 |
-| 动态指针 | 复用原版 `LodestoneTracker` 数据组件和 `minecraft:item/compass` 模型。服务端把目标写入主手/副手考古罗盘，原版 32 帧指南针自动指向目标；无目标写入空磁石目标以显示旋转状态 |
-| 网络隔离 | 网络层仅依赖无渲染 API 的 `ArchaeologyCompassClientState`。未来模型/渲染代码必须在独立 `Dist.CLIENT` 类中读取该状态 |
+| 动态指针 | 复用原版 `LodestoneTracker` 数据组件和 `minecraft:item/compass` 模型。服务端把目标写入主手/副手考古罗盘；客户端 `ArchaeologyCompassClient` 为考古罗盘注册 `minecraft:angle` 指针属性，读取物品上的磁石目标组件驱动 32 帧指南针指向目标；无目标（组件缺失或目标为空）时返回空值，指针持续旋转 |
+| 网络隔离 | 网络层仅依赖无渲染 API 的 `ArchaeologyCompassClientState`；渲染/指针属性等客户端代码位于 `client/ArchaeologyCompassClient.java`，由 `ExampleMod` 在 `Dist.CLIENT` 分支调用，独立服务端不加载该客户端类 |
 | 验证 | `gradlew.bat build` 成功；开发客户端启动时曾因空 `@EventBusSubscriber` 崩溃，已移除该标注并修复 |
 
 ### 当前代码结构
@@ -29,7 +29,9 @@ src/main/java/com/luanma114/archaeologycompass/
 ├─ ArchaeologyCompassTargetState.java    服务端每玩家目标缓存
 ├─ ArchaeologyCompassTargetPayload.java  S2C 目标状态包与编解码
 ├─ ArchaeologyCompassNetwork.java        网络包注册与发送
-└─ ArchaeologyCompassClientState.java    无客户端渲染依赖的同步目标状态
+├─ ArchaeologyCompassClientState.java    无客户端渲染依赖的同步目标状态
+└─ client/
+   └─ ArchaeologyCompassClient.java      客户端专属：注册 `minecraft:angle` 指针属性（`Dist.CLIENT`）
 
 src/main/resources/
 ├─ assets/archaeologycompass/
@@ -46,8 +48,8 @@ src/main/resources/
 1. 尚未完成游戏内人工验收。必须测试配方、目标指向、无目标旋转、刷扫中途、完全刷空、放下罗盘、登录、换维度。
 2. 尚未完成独立服务端与双客户端联机测试。
 3. 扫描已改为方块实体遍历，但大量已加载区块或大量玩家时仍应进行 TPS 压力测试；必要时增加分帧预算或区块索引。
-4. 当前使用原版指南针外观作为开发占位。正式发布前可替换为自制模型和纹理；替换时需保持对 `LodestoneTracker` 指向逻辑的支持，或实现等价客户端模型属性。
-5. `ArchaeologyCompassClientState` 当前不含渲染 API。未来任何 `Minecraft`、`ItemProperties`、模型或渲染器引用必须放进 `Dist.CLIENT` 专属类，通用网络类不得直接引用。
+4. 当前使用原版指南针外观作为开发占位。正式发布前可替换为自制模型和纹理；替换时需保留 `minecraft:angle` 指针属性注册（`ArchaeologyCompassClient`）以维持指向逻辑，或实现等价客户端模型属性。
+5. 客户端渲染/指针属性代码已隔离在 `client/ArchaeologyCompassClient.java`（`Dist.CLIENT`）。未来任何 `Minecraft`、`ItemProperties`、模型或渲染器引用必须放进该 `Dist.CLIENT` 专属类，通用网络类不得直接引用。指针旋转效果仍需游戏内人工验收（见第 1 条）。
 
 ## 考古罗盘：功能需求规格
 

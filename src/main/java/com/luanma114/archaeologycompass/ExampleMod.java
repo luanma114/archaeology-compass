@@ -10,11 +10,14 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+// 客户端专属初始化：仅在 Dist.CLIENT 分支引用，避免独立服务端加载客户端类。
+import com.luanma114.archaeologycompass.client.ArchaeologyCompassClient;
 // NeoForge：模组入口、生命周期事件、配置和安全的延迟注册。
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -66,6 +69,11 @@ public final class ExampleMod {
         modBus.addListener(this::addCreative);
         modBus.addListener(ArchaeologyCompassNetwork::registerPayloads);
         modContainer.registerConfig(ModConfig.Type.SERVER, Config.SPEC);
+
+        // 仅客户端注册指南针指针属性。独立服务端不会进入该分支，从而不加载客户端渲染类。
+        if (FMLEnvironment.dist.isClient()) {
+            ArchaeologyCompassClient.registerItemProperties();
+        }
     }
 
     /** 将考古罗盘添加到原版“工具与实用物品”创造模式标签页。 */
