@@ -8,9 +8,10 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.LodestoneTracker;
-// NeoForge：标记本类仅在物理客户端加载。
+// NeoForge：标记本类仅在物理客户端加载，并接收客户端设置事件。
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 /**
  * 考古罗盘的客户端专属初始化。
@@ -23,6 +24,18 @@ public final class ArchaeologyCompassClient {
 
     /** 工具类不允许实例化。 */
     private ArchaeologyCompassClient() {
+    }
+
+    /**
+     * 客户端设置阶段回调。
+     *
+     * <p>此时物品注册表已绑定，可以安全地通过 {@code ARCHAEOLOGY_COMPASS.get()} 获取物品实例。
+     * 不能在 {@link ExampleMod} 构造函数阶段注册，因为那时延迟注册器尚未完成绑定。</p>
+     *
+     * @param event 客户端设置事件
+     */
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(ArchaeologyCompassClient::registerItemProperties);
     }
 
     /**
@@ -41,7 +54,7 @@ public final class ArchaeologyCompassClient {
      * <p>维度校验由 {@link CompassItemPropertyFunction} 内部完成：目标维度与当前维度不一致时
      * 同样进入旋转，无需在此重复判断。</p>
      */
-    public static void registerItemProperties() {
+    private static void registerItemProperties() {
         ItemProperties.register(
                 ExampleMod.ARCHAEOLOGY_COMPASS.get(),
                 ResourceLocation.withDefaultNamespace("angle"),

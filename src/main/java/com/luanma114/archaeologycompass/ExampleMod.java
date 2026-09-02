@@ -70,9 +70,10 @@ public final class ExampleMod {
         modBus.addListener(ArchaeologyCompassNetwork::registerPayloads);
         modContainer.registerConfig(ModConfig.Type.SERVER, Config.SPEC);
 
-        // 仅客户端注册指南针指针属性。独立服务端不会进入该分支，从而不加载客户端渲染类。
+        // 仅客户端监听客户端设置事件，在其中注册指南针指针属性（需等待物品注册完成）。
+        // 独立服务端不会进入该分支，从而不加载客户端渲染类。
         if (FMLEnvironment.dist.isClient()) {
-            ArchaeologyCompassClient.registerItemProperties();
+            modBus.addListener(ArchaeologyCompassClient::onClientSetup);
         }
     }
 
