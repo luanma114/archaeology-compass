@@ -35,11 +35,26 @@ public final class ArchaeologyCompassEvents {
 
         if (!player.getMainHandItem().is(ExampleMod.ARCHAEOLOGY_COMPASS.get())
                 && !player.getOffhandItem().is(ExampleMod.ARCHAEOLOGY_COMPASS.get())) {
+            // 玩家未持有罗盘时清除旧目标，并通知客户端停止指向已失效位置。
+            if (ArchaeologyCompassTargetState.clear(player.getUUID())) {
+                ArchaeologyCompassNetwork.sendTarget(player, null);
+            }
             return;
         }
 
-        // 当前用于验证候选目标搜索。后续应把返回值写入玩家目标状态并同步至客户端。
-        findNearestTarget(player);
+        ExampleMod.Target target = findNearestTarget(player);
+        if (target == null) {
+            // 范围内没有候选方块。仅在之前有目标时发送一次“无目标”状态，避免重复网络包。
+            if (ArchaeologyCompassTargetState.clear(player.getUUID())) {
+                ArchaeologyCompassNetwork.sendTarget(player, null);
+            }
+            return;
+        }
+
+        // 目标坐标或维度变化时才同步；同一目标的后续扫描不发送重复包。
+        if (ArchaeologyCompassTargetState.set(player.getUUID(), target)) {
+            ArchaeologyCompassNetwork.sendTarget(player, target);
+        }
     }
 
     /**
