@@ -11,11 +11,11 @@
 | 物品与本地化 | 注册 `archaeology_compass`；加入“工具与实用物品”创造模式标签页；含中英文名称 |
 | 生存获取 | 有序配方：中心指南针、上下刷子、左右铜锭，产出 1 个考古罗盘 |
 | 目标数据 | `archaeology_targets` 方块标签默认包含可疑沙子和可疑沙砾 |
-| 有效性 | 目标须为 `BrushableBlockEntity`；保存数据含 `loot_table` 或 `item`。首次刷扫后出现 `item` 仍保持定位，完全刷空后停止定位 |
+| 有效性 | 目标须为 `BrushableBlockEntity`；保存数据含 `LootTable` 或 `item`。首次刷扫后出现 `item` 仍保持定位，完全刷空后停止定位 |
 | 扫描 | 服务端仅遍历已加载区块的方块实体，不强制加载区块；选择水平范围、垂直范围内最近目标 |
 | 配置 | 服务端可配置 `horizontalRadius`、`verticalRadius`、`scanIntervalTicks` |
-| 状态与同步 | 按玩家 UUID 缓存目标；目标变化、无目标、放下罗盘、登录、换维度时同步；退出时清理缓存 |
-| 动态指针 | 复用原版 `LodestoneTracker` 数据组件和 `minecraft:item/compass` 模型。服务端把目标写入主手/副手考古罗盘；客户端 `ArchaeologyCompassClient` 为考古罗盘注册 `minecraft:angle` 指针属性，读取物品上的磁石目标组件驱动 32 帧指南针指向目标；无目标（组件缺失或目标为空）时返回空值，指针持续旋转 |
+| 状态与同步 | 按玩家 UUID 缓存目标；目标变化、无目标、物品栏中失去罗盘、登录、换维度时同步；退出时清理缓存 |
+| 动态指针 | 服务端把目标通过 S2C 包下发给客户端，客户端 `ArchaeologyCompassPropertyFunction` 从 `ArchaeologyCompassClientState` 读取目标，按原版指向逻辑驱动 32 帧 `minecraft:item/compass` 模型；无目标时指针匀速顺时针旋转。模型含完整 32 帧 `minecraft:angle` override 列表 |
 | 网络隔离 | 网络层仅依赖无渲染 API 的 `ArchaeologyCompassClientState`；渲染/指针属性等客户端代码位于 `client/ArchaeologyCompassClient.java`，由 `ExampleMod` 在 `Dist.CLIENT` 分支调用，独立服务端不加载该客户端类 |
 | 验证 | `gradlew.bat build` 成功；开发客户端启动时曾因空 `@EventBusSubscriber` 崩溃，已移除该标注并修复 |
 
@@ -25,19 +25,20 @@
 src/main/java/com/luanma114/archaeologycompass/
 ├─ ExampleMod.java                       模组入口、物品注册、配置与网络注册
 ├─ Config.java                           服务端扫描配置
-├─ ArchaeologyCompassEvents.java         扫描、有效性判定、罗盘组件写入、玩家生命周期处理
+├─ ArchaeologyCompassEvents.java         扫描、有效性判定、玩家生命周期处理
 ├─ ArchaeologyCompassTargetState.java    服务端每玩家目标缓存
 ├─ ArchaeologyCompassTargetPayload.java  S2C 目标状态包与编解码
 ├─ ArchaeologyCompassNetwork.java        网络包注册与发送
 ├─ ArchaeologyCompassClientState.java    无客户端渲染依赖的同步目标状态
 └─ client/
-   └─ ArchaeologyCompassClient.java      客户端专属：注册 `minecraft:angle` 指针属性（`Dist.CLIENT`）
+   ├─ ArchaeologyCompassClient.java            客户端专属：注册 `minecraft:angle` 指针属性（`Dist.CLIENT`）
+   └─ ArchaeologyCompassPropertyFunction.java  指针角度计算：读取 S2C 状态，指向目标或匀速顺时针旋转
 
 src/main/resources/
 ├─ assets/archaeologycompass/
 │  ├─ lang/en_us.json
 │  ├─ lang/zh_cn.json
-│  └─ models/item/archaeology_compass.json  继承原版动态指南针模型
+│  └─ models/item/archaeology_compass.json  32 帧 `minecraft:angle` override 指针模型
 └─ data/archaeologycompass/
    ├─ recipe/archaeology_compass.json
    └─ tags/block/archaeology_targets.json
@@ -45,17 +46,17 @@ src/main/resources/
 
 ### 已知限制与后续工作
 
-1. 尚未完成游戏内人工验收。必须测试配方、目标指向、无目标旋转、刷扫中途、完全刷空、放下罗盘、登录、换维度。
+1. 已完成单人基础人工验收（配方、目标指向、无目标旋转、刷扫、刷空、物品栏内/手中持有、登录、换维度）。
 2. 尚未完成独立服务端与双客户端联机测试。
 3. 扫描已改为方块实体遍历，但大量已加载区块或大量玩家时仍应进行 TPS 压力测试；必要时增加分帧预算或区块索引。
-4. 当前使用原版指南针外观作为开发占位。正式发布前可替换为自制模型和纹理；替换时需保留 `minecraft:angle` 指针属性注册（`ArchaeologyCompassClient`）以维持指向逻辑，或实现等价客户端模型属性。
-5. 客户端渲染/指针属性代码已隔离在 `client/ArchaeologyCompassClient.java`（`Dist.CLIENT`）。未来任何 `Minecraft`、`ItemProperties`、模型或渲染器引用必须放进该 `Dist.CLIENT` 专属类，通用网络类不得直接引用。指针旋转效果仍需游戏内人工验收（见第 1 条）。
+4. 当前使用原版指南针外观作为开发占位。正式发布前可替换为自制模型和纹理；替换时需保留 `minecraft:angle` 指针属性注册以维持指向逻辑，或实现等价客户端模型属性。
+5. 客户端渲染/指针属性代码已隔离在 `client/`（`Dist.CLIENT`）：`ArchaeologyCompassClient` 注册 `minecraft:angle` 属性，`ArchaeologyCompassPropertyFunction` 计算指针角度。未来任何 `Minecraft`、`ItemProperties`、模型或渲染器引用必须放进该 `Dist.CLIENT` 专属类，通用网络类不得直接引用。
 
 ## 考古罗盘：功能需求规格
 
 ### 功能目标
 
-新增物品“考古罗盘”。持有时表现为指南针：指针持续指向扫描范围内最近的可考古方块。范围内无目标时，指针持续旋转。
+新增物品“考古罗盘”。玩家物品栏中拥有它时表现为指南针：指针持续指向扫描范围内最近的可考古方块。范围内无目标时，指针持续旋转。
 
 ### 目标方块与兼容规则
 
@@ -84,7 +85,7 @@ src/main/resources/data/<mod_id>/tags/block/archaeology_targets.json
 
 ### 定位与锁定规则
 
-1. 玩家主手或副手持有考古罗盘时，服务端按扫描间隔搜索目标。
+1. 玩家物品栏（含主手、副手）中存在考古罗盘时，服务端按扫描间隔搜索目标。
 2. 在当前维度、以玩家位置为中心的水平半径和垂直范围内搜索标签目标方块。
 3. 从完整扫描结果的有效目标中选择欧氏距离最近者，记录其维度与方块坐标。
 4. 已锁定目标仍存在、仍属于标签、仍通过考古战利品有效性判定、仍在范围内、仍与玩家处于同一维度时，继续指向它。
@@ -108,9 +109,9 @@ src/main/resources/data/<mod_id>/tags/block/archaeology_targets.json
 ### 客户端表现与同步
 
 - 服务端为权威端：搜索、锁定、失效判定均在服务端执行。
-- 服务端仅向持有罗盘的玩家同步锁定目标坐标或“无目标”状态。
-- 客户端根据玩家朝向和目标坐标计算罗盘指针角度。
-- 无目标时客户端使用持续旋转角度；不向服务端发送旋转状态。
+- 服务端仅向拥有罗盘的玩家同步锁定目标坐标或“无目标”状态（通过显式 S2C 包，不依赖物品数据组件同步）。
+- 客户端从 S2C 包状态读取目标，根据玩家朝向和目标坐标计算罗盘指针角度。
+- 无目标时客户端使用持续顺时针旋转角度；不向服务端发送旋转状态。
 - 物品模型首发按 Minecraft `1.21.1` 对应 NeoForge API 实现。模型 JSON、物品模型定义和客户端属性注册在后续版本可能变化；版本专属代码不得直接复制到其他版本分支。
 - 独立服务端不得加载渲染、模型属性或其他客户端专属类。
 
@@ -121,10 +122,9 @@ src/main/resources/data/<mod_id>/tags/block/archaeology_targets.json
 | `horizontalRadius` | `64` | 水平搜索半径，单位：格 |
 | `verticalRadius` | `32` | 垂直搜索半径，单位：格 |
 | `scanIntervalTicks` | `20` | 搜索间隔，单位：Tick |
-| `maxBlocksPerScan` | `8192` | 每 Tick 最大候选方块检查数；完整扫描可跨多个 Tick |
-| `requireHoldingCompass` | `true` | 仅持有罗盘时搜索 |
+| `maxBlocksPerScan` | `8192` | 每 Tick 最大候选方块检查数；完整扫描可跨多个 Tick（预留，当前实现按方块实体一次性遍历） |
 
-配置必须限制合理上下限，防止服务器将半径设得过大后发生卡顿。
+配置必须限制合理上下限，防止服务器将半径设得过大后发生卡顿。当前实现中，只要玩家物品栏内存在罗盘即扫描，无需 `requireHoldingCompass` 开关。
 
 ### 资源与注册清单
 

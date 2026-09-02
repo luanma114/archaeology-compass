@@ -22,7 +22,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  */
 @EventBusSubscriber(modid = ExampleMod.MOD_ID)
 public final class ArchaeologyCompassEvents {
-    /** 玩家持有罗盘时，按服务端配置周期更新目标。 */
+    /** 玩家物品栏中有罗盘时，按服务端配置周期更新目标。 */
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)

@@ -47,7 +47,7 @@ public final class ArchaeologyCompassTargetState {
     /**
      * 清除玩家目标。
      *
-     * <p>用于未持有罗盘或本次扫描未发现候选方块。下一步网络模块会在本方法返回 {@code true} 时
+     * <p>用于玩家物品栏中没有罗盘或本次扫描未发现候选方块。下一步网络模块会在本方法返回 {@code true} 时
      * 同步“无目标”状态，使客户端指针旋转。</p>
      *
      * @param playerId 玩家 UUID
