@@ -1,15 +1,10 @@
 package com.luanma114.archaeologycompass;
 
-import java.util.Optional;
-// Minecraft：方块实体、区块、服务端玩家、物品数据组件和世界读取 API。
+// Minecraft：方块实体、区块、服务端玩家、NBT 和世界读取 API。
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.GlobalPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.LodestoneTracker;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BrushableBlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -39,13 +34,13 @@ public final class ArchaeologyCompassEvents {
     }
 
     /**
-     * 根据玩家当前是否持有罗盘，立即建立或清除目标状态。
+     * 根据玩家物品栏中是否拥有罗盘，立即建立或清除目标状态。
      *
-     * <p>供登录、换维度和周期 Tick 共用，确保这些入口遵循完全相同的同步规则。</p>
+     * <p>只要玩家物品栏（含主手、副手）中存在罗盘就持续扫描，罗盘不在手中时同样生效；
+     * 完全失去罗盘时才清除目标。供登录、换维度和周期 Tick 共用。</p>
      */
     private static void updateOrClearTarget(ServerPlayer player) {
-        if (player.getMainHandItem().is(ExampleMod.ARCHAEOLOGY_COMPASS.get())
-                || player.getOffhandItem().is(ExampleMod.ARCHAEOLOGY_COMPASS.get())) {
+        if (player.getInventory().contains(stack -> stack.is(ExampleMod.ARCHAEOLOGY_COMPASS.get()))) {
             updateTarget(player);
         } else {
             clearTarget(player);
@@ -90,47 +85,17 @@ public final class ArchaeologyCompassEvents {
             return;
         }
 
-        applyCompassTarget(player, target);
         if (ArchaeologyCompassTargetState.set(player.getUUID(), target)) {
             ArchaeologyCompassNetwork.sendTarget(player, target);
         }
     }
 
     /**
-     * 清除服务端缓存和罗盘物品中的原版磁石目标；旧目标存在时向客户端发送一次无目标状态。
+     * 清除服务端缓存；旧目标存在时向客户端发送一次无目标状态。
      */
     private static void clearTarget(ServerPlayer player) {
-        applyCompassTarget(player, null);
         if (ArchaeologyCompassTargetState.clear(player.getUUID())) {
             ArchaeologyCompassNetwork.sendTarget(player, null);
-        }
-    }
-
-    /**
-     * 将当前考古目标写入玩家主手和副手的考古罗盘。
-     *
-     * <p>复用原版 {@link DataComponents#LODESTONE_TRACKER} 与 {@link LodestoneTracker}。因此无需自定义
-     * 客户端模型属性：原版 {@code minecraft:compass} 谓词会把指针指向此坐标；无目标时写入空目标组件，
-     * 原版指南针会显示持续旋转的无效指向状态。</p>
-     */
-    private static void applyCompassTarget(ServerPlayer player, ExampleMod.Target target) {
-        applyCompassTarget(player.getMainHandItem(), target);
-        applyCompassTarget(player.getOffhandItem(), target);
-    }
-
-    /** 仅修改考古罗盘，避免改变玩家手中原版指南针或其他物品的数据组件。 */
-    private static void applyCompassTarget(ItemStack stack, ExampleMod.Target target) {
-        if (!stack.is(ExampleMod.ARCHAEOLOGY_COMPASS.get())) {
-            return;
-        }
-
-        if (target == null) {
-            stack.set(DataComponents.LODESTONE_TRACKER, new LodestoneTracker(Optional.empty(), false));
-        } else {
-            stack.set(DataComponents.LODESTONE_TRACKER, new LodestoneTracker(
-                    Optional.of(GlobalPos.of(target.dimension(), target.position())),
-                    false
-            ));
         }
     }
 

@@ -1,17 +1,17 @@
 package com.luanma114.archaeologycompass.client;
 
-// Minecraft：客户端模型属性接口、坐标/角度计算与物品数据组件。
+// 模组入口与客户端同步状态：读取服务端通过 S2C 包下发的目标。
+import com.luanma114.archaeologycompass.ArchaeologyCompassClientState;
+import com.luanma114.archaeologycompass.ExampleMod;
+// Minecraft：客户端模型属性接口与角度计算。
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.ClampedItemPropertyFunction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.GlobalPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.LodestoneTracker;
 import net.minecraft.world.phys.Vec3;
 // NeoForge：标记本类仅在物理客户端加载。
 import net.neoforged.api.distmarker.Dist;
@@ -20,8 +20,12 @@ import net.neoforged.api.distmarker.OnlyIn;
 /**
  * 考古罗盘的指针模型属性函数。
  *
- * <p>替代原版 {@link net.minecraft.client.renderer.item.CompassItemPropertyFunction} 的随机抖动旋转，
- * 在无目标时改为匀速顺时针旋转；有目标时的指向计算与原版完全一致。</p>
+ * <p>从 {@link ArchaeologyCompassClientState} 读取服务端通过 S2C 包下发的目标，替代原版
+ * {@link net.minecraft.client.renderer.item.CompassItemPropertyFunction} 的随机抖动旋转：
+ * 无目标时匀速顺时针旋转，有目标时按原版指向逻辑指向目标。</p>
+ *
+ * <p>不读取物品上的 {@code LodestoneTracker} 数据组件，因为服务端修改物品组件后依赖库存同步，
+ * 在结构方块等场景下同步不可靠；显式的 S2C 网络包更为可靠。</p>
  */
 @OnlyIn(Dist.CLIENT)
 public final class ArchaeologyCompassPropertyFunction implements ClampedItemPropertyFunction {
@@ -49,31 +53,23 @@ public final class ArchaeologyCompassPropertyFunction implements ClampedItemProp
             return 0.0F;
         }
 
-        return getRotation(stack, level, entity1);
+        return getRotation(level, entity1);
     }
 
-    /**
-     * 根据物品上是否存在有效目标，选择指向或匀速旋转。
-     */
-    private float getRotation(ItemStack stack, ClientLevel level, Entity entity) {
-        GlobalPos target = getTarget(stack);
+    /** 根据服务端下发的目标是否存在，选择指向或匀速旋转。 */
+    private float getRotation(ClientLevel level, Entity entity) {
+        ExampleMod.Target target = ArchaeologyCompassClientState.getTarget();
         if (!isValidTarget(entity, target)) {
             return getClockwiseSpin(level.getGameTime());
         }
-        return getRotationTowardsTarget(entity, level.getGameTime(), target.pos());
-    }
-
-    /** 从服务端写入物品的磁石目标组件读取目标坐标；无目标返回 {@code null}。 */
-    private static GlobalPos getTarget(ItemStack stack) {
-        LodestoneTracker tracker = stack.get(DataComponents.LODESTONE_TRACKER);
-        return tracker == null ? null : tracker.target().orElse(null);
+        return getRotationTowardsTarget(entity, level.getGameTime(), target.position());
     }
 
     /** 目标存在、与玩家同维度、且不处于玩家脚下时才视为有效。 */
-    private static boolean isValidTarget(Entity entity, GlobalPos target) {
+    private static boolean isValidTarget(Entity entity, ExampleMod.Target target) {
         return target != null
                 && target.dimension() == entity.level().dimension()
-                && !(target.pos().distToCenterSqr(entity.position()) < 1.0E-5F);
+                && !(target.position().distToCenterSqr(entity.position()) < 1.0E-5F);
     }
 
     /**

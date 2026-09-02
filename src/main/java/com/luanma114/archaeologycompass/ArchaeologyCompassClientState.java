@@ -10,15 +10,20 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
  * 后续纯客户端渲染类只读取 {@link #getTarget()}，不要反向让网络类引用渲染类。</p>
  */
 public final class ArchaeologyCompassClientState {
-    /** 当前连接收到的最近考古目标；{@code null} 表示无目标。 */
-    private static ExampleMod.Target target;
+    /**
+     * 当前连接收到的最近考古目标；{@code null} 表示无目标。
+     *
+     * <p>网络包处理器可能在非渲染线程运行，而模型属性在渲染线程读取，因此用 {@code volatile}
+     * 保证可见性。{@link ExampleMod.Target} 是不可变记录，读取线程只会拿到完整的快照。</p>
+     */
+    private static volatile ExampleMod.Target target;
 
     /** 将服务端 S2C 包中的目标写入本地状态。 */
     public static void handleTargetPayload(ArchaeologyCompassTargetPayload payload, IPayloadContext context) {
         target = payload.target();
     }
 
-    /** 提供给后续客户端模型属性读取的当前目标。 */
+    /** 提供给客户端指针模型属性读取的当前目标。 */
     public static ExampleMod.Target getTarget() {
         return target;
     }

@@ -1,6 +1,7 @@
 package com.luanma114.archaeologycompass.client;
 
-// 模组入口：读取注册物品对象。
+// 模组入口与客户端同步状态。
+import com.luanma114.archaeologycompass.ArchaeologyCompassClientState;
 import com.luanma114.archaeologycompass.ExampleMod;
 // Minecraft：客户端模型属性注册。
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -40,12 +41,12 @@ public final class ArchaeologyCompassClient {
      *
      * <p>原版 {@code minecraft:item/compass} 模型通过 {@code minecraft:angle} 谓词在 32 帧纹理中
      * 选择一帧，但该属性是按物品单独注册的，原版只注册给指南针和追溯指针。这里为考古罗盘
-     * 复用同一属性，并由 {@link ArchaeologyCompassPropertyFunction} 从服务端写入物品的
-     * {@link net.minecraft.core.component.DataComponents#LODESTONE_TRACKER} 数据组件读取目标坐标。</p>
+     * 复用同一属性，并由 {@link ArchaeologyCompassPropertyFunction} 从 {@link ArchaeologyCompassClientState}
+     * 读取服务端通过 S2C 包下发的目标坐标。</p>
      *
      * <ul>
-     *   <li>组件存在且含目标：指针指向它（与原版指向逻辑一致）；</li>
-     *   <li>组件不存在或目标为空：指针匀速顺时针旋转。</li>
+     *   <li>存在有效目标：指针指向它（与原版指向逻辑一致）；</li>
+     *   <li>无目标或目标失效：指针匀速顺时针旋转。</li>
      * </ul>
      */
     private static void registerItemProperties() {
