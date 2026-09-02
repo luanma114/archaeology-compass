@@ -2,12 +2,9 @@ package com.luanma114.archaeologycompass.client;
 
 // 模组入口：读取注册物品对象。
 import com.luanma114.archaeologycompass.ExampleMod;
-// Minecraft：客户端模型属性注册、指南针指针计算与物品数据组件。
-import net.minecraft.client.renderer.item.CompassItemPropertyFunction;
+// Minecraft：客户端模型属性注册。
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.component.LodestoneTracker;
 // NeoForge：标记本类仅在物理客户端加载，并接收客户端设置事件。
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -43,25 +40,19 @@ public final class ArchaeologyCompassClient {
      *
      * <p>原版 {@code minecraft:item/compass} 模型通过 {@code minecraft:angle} 谓词在 32 帧纹理中
      * 选择一帧，但该属性是按物品单独注册的，原版只注册给指南针和追溯指针。这里为考古罗盘
-     * 复用同一属性，并直接从服务端写入物品的 {@link DataComponents#LODESTONE_TRACKER}
-     * 数据组件读取目标坐标。</p>
+     * 复用同一属性，并由 {@link ArchaeologyCompassPropertyFunction} 从服务端写入物品的
+     * {@link net.minecraft.core.component.DataComponents#LODESTONE_TRACKER} 数据组件读取目标坐标。</p>
      *
      * <ul>
-     *   <li>组件存在且含目标：返回目标 {@link net.minecraft.core.GlobalPos}，指针指向它；</li>
-     *   <li>组件不存在或目标为空：返回 {@code null}，指针进入持续旋转状态。</li>
+     *   <li>组件存在且含目标：指针指向它（与原版指向逻辑一致）；</li>
+     *   <li>组件不存在或目标为空：指针匀速顺时针旋转。</li>
      * </ul>
-     *
-     * <p>维度校验由 {@link CompassItemPropertyFunction} 内部完成：目标维度与当前维度不一致时
-     * 同样进入旋转，无需在此重复判断。</p>
      */
     private static void registerItemProperties() {
         ItemProperties.register(
                 ExampleMod.ARCHAEOLOGY_COMPASS.get(),
                 ResourceLocation.withDefaultNamespace("angle"),
-                new CompassItemPropertyFunction((level, stack, entity) -> {
-                    LodestoneTracker tracker = stack.get(DataComponents.LODESTONE_TRACKER);
-                    return tracker == null ? null : tracker.target().orElse(null);
-                })
+                new ArchaeologyCompassPropertyFunction()
         );
     }
 }
