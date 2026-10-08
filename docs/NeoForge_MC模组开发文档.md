@@ -1,5 +1,84 @@
 # NeoForge Minecraft 模组开发文档
 
+## 2026-10-08 更新：开发、资源与发布说明
+
+本节记录当前仓库的新增实现及从 README 迁入的技术说明。下方 2026-09-02 状态为历史记录，其中原版占位外观等描述不代表当前版本。
+
+### 开发与构建
+
+环境：Minecraft `1.21.1`、NeoForge `21.1.235`、Java `21`。
+
+```bat
+gradlew.bat runClient
+gradlew.bat runServer
+gradlew.bat build
+```
+
+构建产物位于 `build/libs/`。后续 Minecraft 版本须独立构建、测试和发布，不使用同一个 JAR 跨版本运行。
+
+### 使用反馈与配置同步
+
+- `client/ArchaeologyCompassClientEvents.java` 通过 `ItemTooltipEvent` 添加中英文用途说明，按住 Shift 展示扫描规则、范围与状态。
+- 范围读取 NeoForge 同步的 SERVER 配置，仅在 `Config.SPEC.isLoaded()` 且存在玩家上下文时显示，不使用客户端自定范围。
+- `ArchaeologyCompassClientState.receivedTarget` 区分尚未接收结果与已确认无目标。
+- `ArchaeologyCompassEvents.INITIALIZED_PLAYERS` 记录扫描初始化状态，首次没有目标时补发空目标包；失去罗盘、换维度、重生和退出时处理初始化状态。
+- 玩家没有持有罗盘、例如仅在物品列表中查看时，提示放入物品栏开始扫描，不将其他上下文误报为当前扫描结果。
+
+### 配方书与 JEI
+
+配方位于 `src/main/resources/data/archaeologycompass/recipe/archaeology_compass.json`，使用 `minecraft:crafting_shaped`。现有材料与摆放不变：上下刷子、左右铜锭、中央指南针，产出一个考古罗盘。
+
+解锁 advancement 位于 `src/main/resources/data/archaeologycompass/advancement/recipes/tools/archaeology_compass.json`。获得刷子、获得指南针和已解锁配方三个条件采用 OR 关系，奖励解锁对应配方。
+
+JEI 使用标准工作台分类自动识别原版有序配方，不需要专用插件，也没有增加 JEI 编译或强制运行依赖。测试客户端尚未安装 JEI，其配方展示及交互仍待游戏内验证。
+
+### 美术资源与生成
+
+当前美术为原创 32×32 铜制罗盘，包含 32 个角度帧。采用原版风格的斜视椭圆表盘、简洁刻度、铜色侧壁及少量氧化铜装饰，移除旧版怀表挂环与密集装饰。最新指针纵向透视比例为 `0.64`，表盘同步增高，侧壁减薄。
+
+- 贴图：`src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_00.png` 至 `archaeology_compass_31.png`。
+- 帧模型：`src/main/resources/assets/archaeologycompass/models/item/archaeology_compass_00.json` 至 `archaeology_compass_31.json`。
+- 主模型：`src/main/resources/assets/archaeologycompass/models/item/archaeology_compass.json`，通过 `minecraft:angle` overrides 选择帧，保持原有方向映射。
+- 全帧预览：`docs/archaeology_compass_preview.png`。
+- 旋转动画：`docs/archaeology_compass_rotation.gif`。
+
+![32 帧贴图全览](archaeology_compass_preview.png)
+
+修改根目录 `generate_compass_assets.py` 可调整外观并重新生成贴图、帧模型及预览，需要 Python 3 与 Pillow：
+
+```bat
+py -3 -m pip install Pillow
+py -3 generate_compass_assets.py
+```
+
+预览是资源动画，不是游戏截图，播放速度不代表游戏内指针转速。
+
+### 验证状态
+
+- 离线 Gradle build 已通过，JAR 已确认包含贴图、配方解锁资源及许可文件。
+- 32 帧均为不同的 32×32 RGBA 贴图，透明轮廓一致；模型引用和中英文提示键已校验。
+- 开发客户端成功启动并进入单人世界，无崩溃。启动和资源加载正常不等于交互验收通过。
+- 最新 `0.64` 透视比例及减薄侧壁的游戏内效果仍待验证；此前更扁的版本已取得玩家截图反馈。
+- 使用反馈、配方书实际解锁、JEI 展示、独立服务端和双客户端联机仍需专项验证。
+- 当前没有自动化测试函数，不能将构建成功描述为自动化功能测试通过。
+
+### 许可与发布边界
+
+本项目按内容分别授权，不是全部文件同时适用两种许可证：
+
+- Java、生成脚本、模型 JSON、配置和项目文档等非美术内容采用 MIT，见根目录 `LICENSE`。
+- 罗盘 PNG 贴图、全帧 PNG 预览和 GIF 旋转动画采用 CC BY 4.0，具体范围和完整条款链接见根目录 `LICENSE_ASSETS`。
+- NeoForged MDK 模板保留原有 MIT 版权与许可声明，见 `TEMPLATE_LICENSE.txt`。第三方材料和 Minecraft 资源不属于项目授权范围。
+- 生成脚本采用 MIT，不改变仓库已生成美术资源的 CC BY 4.0 授权。
+
+美术署名示例：
+
+> Archaeology Compass artwork by luanma114, licensed under CC BY 4.0. Source: https://github.com/luanma114/archaeology-compass · License: https://creativecommons.org/licenses/by/4.0/ 。分发修改版时须补充修改说明。
+
+整合包可在遵守许可条件的前提下收录和分发模组。Gradle 的 JAR 任务打包 `LICENSE`、`LICENSE_ASSETS` 和 `TEMPLATE_LICENSE.txt`，模组元数据使用 `MIT AND CC-BY-4.0`。
+
+已发布 `v0.1.0` 标签、Release 和 JAR 附件保持不变，旧附件仍含 `All Rights Reserved` 元数据和较早的功能与外观。本次许可声明适用于当前仓库及后续构建，不能将旧附件描述为已更新许可的构建。新功能、许可及外观应在后续版本重新构建发布，避免覆盖旧附件。
+
 ## 考古罗盘：当前实现状态（2026-09-02）
 
 ### 已实现
