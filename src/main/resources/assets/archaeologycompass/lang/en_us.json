@@ -1,3 +1,12 @@
 {
-  "item.archaeologycompass.archaeology_compass": "Archaeology Compass"
+  "item.archaeologycompass.archaeology_compass": "Archaeology Compass",
+  "tooltip.archaeologycompass.purpose": "Points to nearby suspicious sand and gravel with loot remaining.",
+  "tooltip.archaeologycompass.hold_shift": "Hold Shift for scan details and status",
+  "tooltip.archaeologycompass.loaded_chunks": "Searches loaded chunks only; works anywhere in your inventory.",
+  "tooltip.archaeologycompass.no_target_spin": "The needle spins when no target is available.",
+  "tooltip.archaeologycompass.range": "Server scan range: %s blocks horizontally, %s blocks above and below",
+  "tooltip.archaeologycompass.inactive": "Place in your inventory to start scanning",
+  "tooltip.archaeologycompass.waiting": "Waiting for server scan results...",
+  "tooltip.archaeologycompass.not_found": "No archaeology target found within scan range",
+  "tooltip.archaeologycompass.found": "Archaeology target found"
 }

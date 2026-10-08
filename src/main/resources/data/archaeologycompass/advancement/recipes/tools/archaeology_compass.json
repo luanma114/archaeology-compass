@@ -1,0 +1,29 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_brush": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": "minecraft:brush" }]
+      }
+    },
+    "has_compass": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": "minecraft:compass" }]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "archaeologycompass:archaeology_compass"
+      }
+    }
+  },
+  "requirements": [
+    ["has_brush", "has_compass", "has_the_recipe"]
+  ],
+  "rewards": {
+    "recipes": ["archaeologycompass:archaeology_compass"]
+  }
+}

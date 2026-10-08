@@ -1,5 +1,9 @@
 package com.luanma114.archaeologycompass;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 // Minecraft：方块实体、区块、服务端玩家、NBT 和世界读取 API。
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +26,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  */
 @EventBusSubscriber(modid = ExampleMod.MOD_ID)
 public final class ArchaeologyCompassEvents {
+    private static final Set<UUID> INITIALIZED_PLAYERS = new HashSet<>();
     /** 玩家物品栏中有罗盘时，按服务端配置周期更新目标。 */
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -42,8 +47,13 @@ public final class ArchaeologyCompassEvents {
     private static void updateOrClearTarget(ServerPlayer player) {
         if (player.getInventory().contains(stack -> stack.is(ExampleMod.ARCHAEOLOGY_COMPASS.get()))) {
             updateTarget(player);
+            if (INITIALIZED_PLAYERS.add(player.getUUID())
+                    && ArchaeologyCompassTargetState.get(player.getUUID()) == null) {
+                ArchaeologyCompassNetwork.sendTarget(player, null);
+            }
         } else {
             clearTarget(player);
+            INITIALIZED_PLAYERS.remove(player.getUUID());
         }
     }
 
@@ -67,6 +77,16 @@ public final class ArchaeologyCompassEvents {
     @SubscribeEvent
     public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
+            INITIALIZED_PLAYERS.remove(player.getUUID());
+            updateOrClearTarget(player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            INITIALIZED_PLAYERS.remove(player.getUUID());
+            ArchaeologyCompassTargetState.clear(player.getUUID());
             updateOrClearTarget(player);
         }
     }
@@ -75,6 +95,7 @@ public final class ArchaeologyCompassEvents {
     @SubscribeEvent
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         ArchaeologyCompassTargetState.clear(event.getEntity().getUUID());
+        INITIALIZED_PLAYERS.remove(event.getEntity().getUUID());
     }
 
     /** 查找最近目标，并且仅在目标坐标或维度变化时发送同步包。 */

@@ -17,10 +17,16 @@ public final class ArchaeologyCompassClientState {
      * 保证可见性。{@link ExampleMod.Target} 是不可变记录，读取线程只会拿到完整的快照。</p>
      */
     private static volatile ExampleMod.Target target;
+    private static volatile boolean receivedTarget;
 
     /** 将服务端 S2C 包中的目标写入本地状态。 */
     public static void handleTargetPayload(ArchaeologyCompassTargetPayload payload, IPayloadContext context) {
         target = payload.target();
+        receivedTarget = true;
+    }
+
+    public static boolean hasReceivedTarget() {
+        return receivedTarget;
     }
 
     /** 提供给客户端指针模型属性读取的当前目标。 */
@@ -36,6 +42,7 @@ public final class ArchaeologyCompassClientState {
      */
     public static void reset() {
         target = null;
+        receivedTarget = false;
     }
 
     /** 工具类不允许实例化。 */

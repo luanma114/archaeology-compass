@@ -1,3 +1,12 @@
 {
-  "item.archaeologycompass.archaeology_compass": "考古罗盘"
+  "item.archaeologycompass.archaeology_compass": "考古罗盘",
+  "tooltip.archaeologycompass.purpose": "指向附近仍有战利品的可疑沙子和可疑沙砾。",
+  "tooltip.archaeologycompass.hold_shift": "按住 Shift 查看扫描说明与状态",
+  "tooltip.archaeologycompass.loaded_chunks": "仅搜索已加载区块；放在物品栏中即可生效。",
+  "tooltip.archaeologycompass.no_target_spin": "无目标时指针持续旋转。",
+  "tooltip.archaeologycompass.range": "服务端扫描范围：水平 %s 格，上下各 %s 格",
+  "tooltip.archaeologycompass.inactive": "放入物品栏后开始扫描",
+  "tooltip.archaeologycompass.waiting": "等待服务端扫描结果……",
+  "tooltip.archaeologycompass.not_found": "扫描范围内未发现考古目标",
+  "tooltip.archaeologycompass.found": "已发现考古目标"
 }
