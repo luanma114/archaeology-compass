@@ -89,7 +89,9 @@ The server controls these settings, including the integrated server in single-pl
 
 ## Prerelease status and limitations
 
-**Version 0.1.2 is an early prerelease focused on artwork.** The author reported normal functionality during a previous 0.1.1 development-client session; that feedback is not a complete test matrix. The V2 artwork, clean-instance installation, tooltip and recipe-book regression checks, JEI display, and dedicated-server multiplayer still need targeted validation. Expect possible issues and please report them.
+**Version 0.1.2 is an early prerelease focused on artwork.** It was validated in a development client on a newly created world: crafting, the needle pointing at a nearby target, the Shift tooltip including its "target found" state, and the V2 artwork in game were all confirmed.
+
+The following have **not** been verified for this release, and no claim is made about them: installation from the release JAR in a clean instance, dedicated-server multiplayer, JEI display, and performance under large scan ranges or high player counts. Expect possible issues and please report them.
 
 - Only loaded chunks within the configured range are searched.
 - Block changes and ordinary inventory changes are reflected on the next scan, not instantly.
@@ -130,7 +132,9 @@ Found a problem? Please [open an issue](https://github.com/luanma114/archaeology
 
 **版本要求：Minecraft 1.21.1、NeoForge 21.1.235 或更新的 1.21.1 兼容版本、Java 21。** 更新的 NeoForge 版本未逐一验证。多人游戏需要客户端和服务器都安装；此文件不支持 Forge、Fabric 或其他 Minecraft 版本。
 
-当前 **0.1.2 为美术更新预发布**，采用两行铜制侧壁、一行暗色收边的 V2 折中外观，并同步项目图标；定位、配方和指针逻辑未改。上一轮 0.1.1 开发客户端获用户反馈功能正常，但未列出完整用例；V2 外观、干净实例安装、提示及配方书回归、JEI 展示和独立服务器联机仍需专项验证。JEI 不是必需依赖；较大范围、高频扫描及多人场景尚无性能实测保证。
+当前 **0.1.2 为美术更新预发布**，采用两行铜制侧壁、一行暗色收边的 V2 折中外观，并同步项目图标；定位、配方和指针逻辑未改。已在新建存档的开发客户端中确认：合成、指针指向附近目标、Shift 提示（含「已发现考古目标」状态）以及 V2 游戏内外观。
+
+以下项目**本次未做验证，页面不作任何相关声明**：发布 JAR 在干净实例中的安装、独立服务器多人联机、JEI 展示，以及大范围扫描与多人场景下的性能。JEI 不是必需依赖。
 
 代码及非美术内容采用 MIT，指定美术资源采用 CC BY 4.0；两者按内容分别适用。整合包可以在遵守相应许可条款的前提下收录。问题反馈请提交 [Issue](https://github.com/luanma114/archaeology-compass/issues)。
 
@@ -165,7 +169,7 @@ Early prerelease for **Minecraft 1.21.1 / NeoForge**.
 
 ## Validation notice
 
-This is not a stable-release claim. Targeted validation of the V2 artwork, clean-instance installation, tooltip and recipe-book regression checks, JEI display, and dedicated-server multiplayer is still pending. Larger multiplayer environments have not been performance-benchmarked.
+This is not a stable-release claim. Crafting, needle behaviour, the Shift tooltip, and the V2 artwork were validated in a development client on a newly created world. Installation from the release JAR in a clean instance, dedicated-server multiplayer, JEI display, and performance under large scan ranges or high player counts have not been verified, and no claims are made about them.
 
 ## 5. Custom License 字段文案（可复制）
 
@@ -179,25 +183,49 @@ The licenses apply by content, not as alternative licenses for all files. Retain
 
 ## 6. 图片标题与说明（作者准备图片后使用）
 
-已准备 [400×400 项目图标](<archaeology_compass_icon_400.png>)，本稿不包含真实游戏截图，不使用假截图、不预填不存在的图片 URL。将图标上传至项目头像字段；其他图片上传到 CurseForge 后，通过页面编辑器插入。游戏截图应来自准备发布的版本。
+已准备 [400×400 项目图标](<archaeology_compass_icon_400.png>)，上传至项目头像字段。真实游戏截图已按 [`screenshots/README.md`](screenshots/README.md) 的规范拍摄完成，位于 `docs/screenshots/`，本稿不使用假截图、不预填不存在的图片 URL。
+
+### 6.1 图片插入位置对照
+
+CurseForge 项目页图片**无法从本地直接引用**，需先在网页端上传（或经项目 Gallery），再在描述编辑器中插入。上传后按此表定位插入点：
+
+| 顺序 | 文件 | 状态 | 插入位置 | 说明 |
+| --- | --- | --- | --- | --- |
+| 1 | `01-needle-pointing.png` | ✅ 已就位 | 正文 `## Features` 标题**之前** | 首图必须是"指针指向可疑沙"这一核心卖点；画面中快捷栏第 2 格为原版指南针，可作对照 |
+| 2 | `02-crafting.png` | ✅ 已就位 | 正文 `## Crafting` 表格**之后** | 紧邻配方说明 |
+| 3 | `03-shift-tooltip.png` | ✅ 已就位 | 正文 `## How to use` 段落**之后** | 配合"按住 Shift 查看详情"的说明；画面含"已发现考古目标"状态 |
+| 4 | `archaeology_compass_rotation.gif` | ✅ 已就位 | 正文 `## Features` 的「Original artwork」条目**之后** | 美术预览，必须保留"非游戏截图"标注 |
+| 5 | `04-compass-vs-vanilla.png` | ⬜ 未拍摄 | `## Requirements and installation` **之前** | 可选；当前仅在首图的快捷栏中并排出现，若需特写需单独拍摄 |
+
+### 6.2 图注文案
 
 | 素材 | 英文标题 | 英文说明 |
 | --- | --- | --- |
-| 真实游戏中的手持/物品栏截图 | A compass for nearby archaeology | Keep the Archaeology Compass in your inventory while exploring nearby suspicious blocks. |
-| 真实工作台合成截图 | Crafting the Archaeology Compass | Two brushes, two copper ingots, and one compass produce an Archaeology Compass. |
-| 真实 Shift 提示截图 | Search details at a glance | Hold Shift over the item to view scan rules, the server's range, and the current search status. |
-| 可选美术旋转预览 | Copper compass artwork preview | Artwork animation preview, not an in-game capture. Preview speed does not represent the in-game needle speed. |
+| 指针指向可疑沙 | A compass for nearby archaeology | Keep the Archaeology Compass in your inventory while exploring nearby suspicious blocks. |
+| 工作台合成 | Crafting the Archaeology Compass | Two brushes, two copper ingots, and one compass produce an Archaeology Compass. |
+| Shift 提示 | Search details at a glance | Hold Shift over the item to view scan rules, the server's range, and the current search status. |
+| 与原版指南针并排（可选） | Copper craftsmanship, familiar feel | The Archaeology Compass sits alongside the vanilla compass—same reading habit, different target. |
+| 美术旋转预览 | Copper compass artwork preview | Artwork animation preview, not an in-game capture. Preview speed does not represent the in-game needle speed. |
+
+### 6.3 上传顺序建议
+
+1. 先传 `01-needle-pointing.png` 作为首图，它决定项目页第一印象。
+2. 再传 `02`、`03`，最后补美术预览。
+3. 每张图的标题与说明按 6.2 填写，英文在前。
+4. 美术预览图必须标注"非游戏截图"，不得与真实截图混排在同一组。
 
 可选美术素材已有 [旋转预览](<archaeology_compass_rotation.gif>) 和 [32 帧总览](<archaeology_compass_preview.png>)，不要将它们称为游戏截图。[项目图标](<archaeology_compass_icon_400.png>) 使用 V2 折中铜壳罗盘第 19 帧整数倍放大，配深色背景、测量环和铜色角标；可通过 [图标生成脚本](<../generate_project_icon.py>) 重现（Python 3 + Pillow）。图标沿用 [美术许可](<../LICENSE_ASSETS>) 的 CC BY 4.0 授权。
 
 ## 7. 发布前核对（内部清单，不粘贴到公开正文）
 
-- [ ] 准备上传的 JAR 已重新构建，并在干净实例中安装验证。
-- [ ] 核对实际版本、文件标签、公开正文及 Changelog 一致。
-- [ ] 测试合成、配方书、Shift 提示、指针方向、无目标、刷扫/刷空、挖掉目标和离开范围。
-- [ ] 测试重连、换维度和重生；如宣传多人可用，补独立服务器与双客户端验证。
-- [ ] 没有把“编译成功”写成“所有测试通过”，没有把 JEI 或新版本加载器写成已实测。
-- [ ] 项目名称未被占用，头像为 400×400，并准备真实游戏截图。
+- [x] 准备上传的 JAR 已重新构建（`build/libs/archaeologycompass-0.1.2.jar`）。
+- [ ] 该 JAR 在干净实例中安装验证 —— **未做**；公开正文已相应声明不作验证声明。
+- [x] 核对实际版本、文件标签、公开正文及 Changelog 一致。
+- [x] 测试合成、配方书、Shift 提示、指针方向（开发客户端 + 新建存档，证据见 `docs/验收清单.md`）。
+- [ ] 测试无目标旋转、刷空/挖掉目标、离开范围 —— **未留存证据**。
+- [ ] 测试重连、换维度和重生；独立服务器与双客户端验证 —— **未做**。
+- [x] 没有把“编译成功”写成“所有测试通过”，没有把 JEI 或新版本加载器写成已实测。
+- [ ] 项目名称未被占用（需在后台确认）；头像 400×400 ✅；真实游戏截图 ✅（`docs/screenshots/`）。
 - [ ] 英文描述和简介先于其他语言；标题不混入游戏版本信息。
 - [ ] 公开页面无 GitHub Releases 或其他外部文件下载入口；源码、许可证和问题反馈链接按用途保留。
 - [ ] 许可选择与正文一致；没有把全部美术误标为 MIT。
