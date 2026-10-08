@@ -10,7 +10,8 @@ ASSETS = ROOT / "src/main/resources/assets/archaeologycompass"
 TEXTURES = ASSETS / "textures/item"
 MODELS = ASSETS / "models/item"
 SIZE = 32
-CENTER = (15.5, 17.0)
+CENTER = (15.5, 15.5)
+PERSPECTIVE = 0.64
 PALETTE = {
     "outline": "#352821",
     "copper_light": "#F2BB7A",
@@ -29,31 +30,23 @@ PALETTE = {
 def base_image():
     image = Image.new("RGBA", (SIZE, SIZE))
     draw = ImageDraw.Draw(image)
-    draw.rounded_rectangle((11, 0, 20, 7), radius=3, fill=PALETTE["outline"])
-    draw.rounded_rectangle((12, 1, 19, 6), radius=2, fill=PALETTE["copper"])
-    draw.line((13, 1, 18, 1), fill=PALETTE["copper_light"])
-    draw.rectangle((14, 3, 17, 5), fill=(0, 0, 0, 0))
-    draw.rectangle((13, 6, 18, 8), fill=PALETTE["copper_shadow"])
-    draw.ellipse((1, 4, 30, 30), fill=PALETTE["outline"])
-    draw.ellipse((2, 5, 29, 29), fill=PALETTE["copper_shadow"])
-    draw.ellipse((3, 5, 28, 28), fill=PALETTE["copper"])
-    draw.arc((3, 5, 28, 28), 185, 300, fill=PALETTE["copper_light"], width=2)
-    draw.arc((3, 6, 28, 28), 15, 100, fill=PALETTE["copper_shadow"], width=2)
-    draw.ellipse((5, 7, 26, 26), fill=PALETTE["outline"])
-    draw.ellipse((6, 8, 25, 25), fill=PALETTE["tick"])
-    draw.ellipse((7, 9, 24, 24), fill=PALETTE["dial_shadow"])
-    draw.ellipse((8, 10, 23, 23), fill=PALETTE["dial"])
-    draw.arc((8, 10, 23, 23), 20, 150, fill=PALETTE["dial_shadow"])
-    for index in range(16):
-        angle = index * math.tau / 16
-        outer = (round(CENTER[0] + math.sin(angle) * 8.5), round(CENTER[1] - math.cos(angle) * 7.5))
-        inner = (round(CENTER[0] + math.sin(angle) * (6.5 if index % 4 == 0 else 7.5)),
-                 round(CENTER[1] - math.cos(angle) * (5.5 if index % 4 == 0 else 6.5)))
-        draw.line((inner, outer), fill=PALETTE["copper_light"] if index % 4 == 0 else PALETTE["tick"])
-    for x, y in ((5, 10), (26, 10), (5, 23), (26, 23)):
-        draw.rectangle((x, y, x + 1, y + 1), fill=PALETTE["outline"])
-        draw.point((x, y), fill=PALETTE["copper_light"])
-    for point in ((4, 19), (4, 20), (5, 21), (24, 26), (25, 25), (26, 24)):
+    draw.ellipse((1, 6, 30, 26), fill=PALETTE["outline"])
+    draw.ellipse((2, 7, 29, 25), fill=PALETTE["copper_shadow"])
+    draw.ellipse((1, 5, 30, 25), fill=PALETTE["outline"])
+    draw.ellipse((2, 6, 29, 24), fill=PALETTE["copper"])
+    draw.arc((2, 6, 29, 24), 185, 310, fill=PALETTE["copper_light"], width=2)
+    draw.arc((2, 6, 29, 24), 10, 160, fill=PALETTE["copper_shadow"])
+    draw.ellipse((4, 7, 27, 23), fill=PALETTE["outline"])
+    draw.ellipse((5, 8, 26, 22), fill=PALETTE["dial_shadow"])
+    draw.ellipse((6, 9, 25, 22), fill=PALETTE["dial"])
+    for index in range(8):
+        angle = index * math.tau / 8
+        outer = (round(CENTER[0] + math.sin(angle) * 10),
+                 round(CENTER[1] - math.cos(angle) * 10 * PERSPECTIVE))
+        inner = (round(CENTER[0] + math.sin(angle) * 8.5),
+                 round(CENTER[1] - math.cos(angle) * 8.5 * PERSPECTIVE))
+        draw.line((inner, outer), fill=PALETTE["tick"])
+    for point in ((4, 19), (5, 20), (25, 20), (26, 19)):
         draw.point(point, fill=PALETTE["patina"])
     return image
 
@@ -68,12 +61,12 @@ def frame_image(index):
     for y in range(SIZE):
         for x in range(SIZE):
             dx = x - CENTER[0]
-            dy = (y - CENTER[1]) / 0.8
+            dy = (y - CENTER[1]) / PERSPECTIVE
             along = dx * direction[0] + dy * direction[1]
             across = dx * perpendicular[0] + dy * perpendicular[1]
-            if 0 <= along <= 7.2 and abs(across) <= max(0.45, 1.9 * (1 - along / 7.8)):
+            if 0 <= along <= 9.0 and abs(across) <= max(0.5, 2.5 * (1 - along / 9.7)):
                 front.append((x, y, across))
-            elif -4.8 <= along < 0 and abs(across) <= max(0.4, 1.35 * (1 + along / 5.4)):
+            elif -6.8 <= along < 0 and abs(across) <= max(0.45, 1.8 * (1 + along / 7.5)):
                 back.append((x, y))
     draw = ImageDraw.Draw(image)
     needle_pixels = {(x, y) for x, y, _ in front} | set(back)
@@ -85,10 +78,8 @@ def frame_image(index):
         draw.point((x, y), fill=PALETTE["tail"])
     for x, y, across in front:
         draw.point((x, y), fill=PALETTE["needle"] if across <= 0 else PALETTE["needle_shadow"])
-    draw.ellipse((13, 15, 18, 19), fill=PALETTE["outline"])
-    draw.ellipse((14, 16, 17, 18), fill=PALETTE["copper"])
-    draw.line((14, 16, 16, 16), fill=PALETTE["copper_light"])
-    draw.point((16, 18), fill=PALETTE["copper_shadow"])
+    draw.rectangle((14, 15, 17, 16), fill=PALETTE["outline"])
+    draw.line((15, 15, 16, 15), fill=PALETTE["copper_light"])
     return image
 
 
