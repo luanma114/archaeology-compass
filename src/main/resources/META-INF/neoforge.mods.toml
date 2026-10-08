@@ -15,7 +15,7 @@ loaderVersion="${loader_version_range}" #mandatory
 license="${mod_license}"
 
 # A URL to refer people to when problems occur with this mod
-#issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
+issueTrackerURL="https://github.com/luanma114/archaeology-compass/issues" #optional
 
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
@@ -33,20 +33,22 @@ displayName="${mod_name}" #mandatory
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 
 # A URL for the "homepage" for this mod, displayed in the mod UI
-#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
+displayURL="https://github.com/luanma114/archaeology-compass" #optional
 
 # A file name (in the root of the mod JAR) containing a logo for display
-#logoFile="examplemod.png" #optional
+logoFile="archaeology_compass_logo.png" #optional
 
 # A text field displayed in the mod UI
 #credits="" #optional
 
 # The authors of the mod, displayed in the mod UI (optional)
-#authors=""
+authors="luanma114"
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-A compass that locates nearby archaeology targets in loaded chunks.
+A craftable copper compass that points to the nearest suspicious sand or suspicious gravel with archaeology loot still inside.
+
+Keep it anywhere in your inventory and let the needle guide you to nearby finds. This is a nearby block finder, not a long-range structure locator, and only loaded chunks are searched. The server controls the horizontal radius, the vertical radius, and the scan interval.
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.

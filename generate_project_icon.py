@@ -1,4 +1,8 @@
-"""Generate the CurseForge project icon from the live V2 compass artwork.
+"""Generate the project icon and the in-game mod list logo from the live V2 compass artwork.
+
+The project icon (400x400) is uploaded to CurseForge as the project avatar.
+The mod list logo (128x128) ships inside the JAR and is referenced by
+`logoFile` in neoforge.mods.toml.
 
 Requires Python 3 and Pillow. This script is MIT-licensed; the generated
 artwork follows the project's CC BY 4.0 artwork license.
@@ -14,6 +18,48 @@ ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / "src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_19.png"
 OUTPUT = ROOT / "docs/archaeology_compass_icon_400.png"
 SIZE = 400
+# In-game mod list logo: the compass alone, without the project-page frame.
+LOGO_OUTPUT = ROOT / "src/main/resources/archaeology_compass_logo.png"
+LOGO_SIZE = 128
+
+
+def load_sprite():
+    """Load the V2 compass frame, cropped to its non-transparent bounds."""
+    with Image.open(SOURCE) as source:
+        sprite = source.convert("RGBA")
+    bounds = sprite.getbbox()
+    if bounds is None:
+        raise ValueError("The compass source texture is empty.")
+    return sprite.crop(bounds)
+
+
+def build_logo():
+    """Render the in-game mod list logo from the same artwork.
+
+    The logo is the compass alone — no project-page rings or corner marks —
+    so it stays readable at the small size the mod list draws it. Integer
+    scaling keeps pixel-art edges exact, and the transparent background lets
+    the mod list draw its own backdrop behind it.
+    """
+    sprite = load_sprite()
+    scale = max(1, LOGO_SIZE // max(sprite.width, sprite.height))
+    sprite = sprite.resize(
+        (sprite.width * scale, sprite.height * scale), Image.Resampling.NEAREST
+    )
+    logo = Image.new("RGBA", (LOGO_SIZE, LOGO_SIZE), (0, 0, 0, 0))
+    logo.alpha_composite(
+        sprite,
+        ((LOGO_SIZE - sprite.width) // 2, (LOGO_SIZE - sprite.height) // 2),
+    )
+    logo.save(LOGO_OUTPUT, optimize=True)
+
+    with Image.open(LOGO_OUTPUT) as saved:
+        assert saved.size == (LOGO_SIZE, LOGO_SIZE)
+        assert saved.format == "PNG"
+        print(
+            f"Created {LOGO_OUTPUT.name}: {saved.size[0]}x{saved.size[1]}, "
+            f"{saved.mode}, {LOGO_OUTPUT.stat().st_size} bytes, sprite scale {scale}x"
+        )
 
 
 def main():
@@ -52,13 +98,8 @@ def main():
         draw.point((corner_x, corner_y), fill="#C58B58")
 
     icon = backdrop.resize((SIZE, SIZE), Image.Resampling.NEAREST).convert("RGBA")
-    with Image.open(SOURCE) as source:
-        sprite = source.convert("RGBA")
-    bounds = sprite.getbbox()
-    if bounds is None:
-        raise ValueError("The compass source texture is empty.")
-    sprite = sprite.crop(bounds)
     # Integer scaling preserves the exact colors and shapes of the game art.
+    sprite = load_sprite()
     sprite = sprite.resize((sprite.width * 10, sprite.height * 10), Image.Resampling.NEAREST)
     x = (SIZE - sprite.width) // 2
     y = (SIZE - sprite.height) // 2 - 4
@@ -76,6 +117,8 @@ def main():
         assert saved.size == (400, 400)
         assert saved.format == "PNG"
         print(f"Created {OUTPUT.name}: {saved.size[0]}x{saved.size[1]}, {saved.mode}, {OUTPUT.stat().st_size} bytes")
+
+    build_logo()
 
 
 if __name__ == "__main__":
