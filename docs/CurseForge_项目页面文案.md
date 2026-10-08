@@ -1,6 +1,6 @@
 # CurseForge 项目页面文案
 
-本稿对应当前 `0.1.1` 预发布版本，仅准备页面内容；未创建 CurseForge 项目、上传文件、重新构建或执行游戏测试。只复制所需的公开文案，不要把编辑说明和待办清单整篇贴到项目页面。
+本稿对应当前 `0.1.2` GitHub 预发布准备版本，采用 V2 折中铜壳与同步的 400×400 项目图标；CurseForge 项目尚未创建或上传。构建与资源检查不代表游戏内验收，V2 外观、干净实例和联机等待测项目保留说明。只复制所需的公开文案，不要把编辑说明和待办清单整篇贴到项目页面。
 
 ## 1. 项目字段（作者填写）
 
@@ -38,7 +38,7 @@ Archaeology Compass adds a craftable copper compass that points toward the neare
 - **Shift for details.** Hold Shift over the item to see search rules, the server's scan range, and the current search status.
 - **Loaded chunks only.** Searching does not force distant chunks to load or generate.
 - **Configurable on the server.** Adjust the horizontal radius, vertical radius, and scan interval.
-- **Original artwork.** A 32×32 copper compass with 32 directional frames, a pale-gold needle, and a green tail.
+- **Original artwork.** A 32×32, 32-frame copper compass with the balanced V2 shell: a subtle two-row copper side wall, a dark bottom edge, a pale-gold needle, and a green tail.
 - **English and Simplified Chinese item text.**
 
 ## How to use
@@ -89,7 +89,7 @@ The server controls these settings, including the integrated server in single-pl
 
 ## Prerelease status and limitations
 
-**Version 0.1.1 is an early prerelease.** Earlier development builds received basic single-player checks, but the latest artwork, tooltip feedback, recipe-book unlocking, JEI display, and dedicated-server multiplayer still need targeted validation. Expect possible issues and please report them.
+**Version 0.1.2 is an early prerelease focused on artwork.** The author reported normal functionality during a previous 0.1.1 development-client session; that feedback is not a complete test matrix. The V2 artwork, clean-instance installation, tooltip and recipe-book regression checks, JEI display, and dedicated-server multiplayer still need targeted validation. Expect possible issues and please report them.
 
 - Only loaded chunks within the configured range are searched.
 - Block changes and ordinary inventory changes are reflected on the next scan, not instantly.
@@ -130,7 +130,7 @@ Found a problem? Please [open an issue](https://github.com/luanma114/archaeology
 
 **版本要求：Minecraft 1.21.1、NeoForge 21.1.235 或更新的 1.21.1 兼容版本、Java 21。** 更新的 NeoForge 版本未逐一验证。多人游戏需要客户端和服务器都安装；此文件不支持 Forge、Fabric 或其他 Minecraft 版本。
 
-当前 **0.1.1 为早期预发布**，新版外观、提示、配方书解锁、JEI 展示及独立服务器联机仍待专项验证。JEI 不是必需依赖；较大范围、高频扫描及多人场景尚无性能实测保证。
+当前 **0.1.2 为美术更新预发布**，采用两行铜制侧壁、一行暗色收边的 V2 折中外观，并同步项目图标；定位、配方和指针逻辑未改。上一轮 0.1.1 开发客户端获用户反馈功能正常，但未列出完整用例；V2 外观、干净实例安装、提示及配方书回归、JEI 展示和独立服务器联机仍需专项验证。JEI 不是必需依赖；较大范围、高频扫描及多人场景尚无性能实测保证。
 
 代码及非美术内容采用 MIT，指定美术资源采用 CC BY 4.0；两者按内容分别适用。整合包可以在遵守相应许可条款的前提下收录。问题反馈请提交 [Issue](https://github.com/luanma114/archaeology-compass/issues)。
 
@@ -140,8 +140,8 @@ Found a problem? Please [open an issue](https://github.com/luanma114/archaeology
 
 | 字段 | 当前建议 |
 | --- | --- |
-| Upload file | 经过重新构建和干净实例验证后，使用对应的主模组 JAR；现有候选为 [archaeologycompass-0.1.1.jar](<../build/libs/archaeologycompass-0.1.1.jar>)，本稿不证明它已完成本轮验收 |
-| Display Name | Archaeology Compass 0.1.1 — Minecraft 1.21.1 (NeoForge) |
+| Upload file | [archaeologycompass-0.1.2.jar](<../build/libs/archaeologycompass-0.1.2.jar>) 已通过离线构建及版本、V2贴图、模型和许可检查；上传 CurseForge 前仍建议完成干净实例验收，不把构建检查当作游戏测试 |
+| Display Name | Archaeology Compass 0.1.2 — Minecraft 1.21.1 (NeoForge) |
 | Release Type | 按目前验证状态选择 **Alpha**；完成单人回归和独服双客户端验证后再考虑 Beta，不直接标稳定 Release |
 | Game Version | 1.21.1 |
 | Mod Loader | NeoForge；不勾选 Forge 或 Fabric |
@@ -150,24 +150,22 @@ Found a problem? Please [open an issue](https://github.com/luanma114/archaeology
 
 如果上传前完成测试，应据实更新第 2、3 节的预发布状态，不沿用已经过时的“仍待验证”，也不在未测试时删掉限制。文件版本变化时同步改标题、文件字段和更新日志。
 
-### English changelog for 0.1.1（可直接粘贴到 Changelog）
+### English changelog for 0.1.2（可直接粘贴到 Changelog）
 
-# Archaeology Compass 0.1.1
+# Archaeology Compass 0.1.2
 
 Early prerelease for **Minecraft 1.21.1 / NeoForge**.
 
-## Changes since 0.1.0
+## Changes since 0.1.1
 
-- Added English and Simplified Chinese tooltip guidance, with Shift details for scan rules, range, and search status.
-- Added a waiting-for-results state and an initial no-target synchronization packet.
-- Added recipe-book unlocking after obtaining a brush or a compass.
-- Updated the compass artwork to an original 32×32, 32-frame copper design with a vanilla-style tilted perspective.
-- Updated documentation to match the current implementation and distinguish planned optimizations from existing features.
-- Documented MIT licensing for code and non-artwork content, and CC BY 4.0 for the specified artwork.
+- Adopted the balanced V2 copper-shell textures across all 32 frames: a two-row side wall, a dark bottom edge, and a softer front seam.
+- Updated the 400×400 project icon to match the V2 artwork.
+- Synchronized artwork previews, the asset generator, project documentation, and CurseForge page copy.
+- Kept the existing target scanning, synchronization, recipe, and needle-angle behavior unchanged.
 
 ## Validation notice
 
-This is not a stable-release claim. Targeted validation of the latest artwork, tooltip feedback, recipe-book unlocking, JEI display, and dedicated-server multiplayer is still pending. Larger multiplayer environments have not been performance-benchmarked.
+This is not a stable-release claim. Targeted validation of the V2 artwork, clean-instance installation, tooltip and recipe-book regression checks, JEI display, and dedicated-server multiplayer is still pending. Larger multiplayer environments have not been performance-benchmarked.
 
 ## 5. Custom License 字段文案（可复制）
 
@@ -190,7 +188,7 @@ The licenses apply by content, not as alternative licenses for all files. Retain
 | 真实 Shift 提示截图 | Search details at a glance | Hold Shift over the item to view scan rules, the server's range, and the current search status. |
 | 可选美术旋转预览 | Copper compass artwork preview | Artwork animation preview, not an in-game capture. Preview speed does not represent the in-game needle speed. |
 
-可选美术素材已有 [旋转预览](<archaeology_compass_rotation.gif>) 和 [32 帧总览](<archaeology_compass_preview.png>)，不要将它们称为游戏截图。[项目图标](<archaeology_compass_icon_400.png>) 使用原创罗盘第 19 帧整数倍放大，配深色背景、测量环和铜色角标；可通过 [图标生成脚本](<../generate_project_icon.py>) 重现（Python 3 + Pillow）。图标沿用 [美术许可](<../LICENSE_ASSETS>) 的 CC BY 4.0 授权。
+可选美术素材已有 [旋转预览](<archaeology_compass_rotation.gif>) 和 [32 帧总览](<archaeology_compass_preview.png>)，不要将它们称为游戏截图。[项目图标](<archaeology_compass_icon_400.png>) 使用 V2 折中铜壳罗盘第 19 帧整数倍放大，配深色背景、测量环和铜色角标；可通过 [图标生成脚本](<../generate_project_icon.py>) 重现（Python 3 + Pillow）。图标沿用 [美术许可](<../LICENSE_ASSETS>) 的 CC BY 4.0 授权。
 
 ## 7. 发布前核对（内部清单，不粘贴到公开正文）
 

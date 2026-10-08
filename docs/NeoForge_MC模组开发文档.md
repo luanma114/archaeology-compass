@@ -1,8 +1,8 @@
 # NeoForge Minecraft 模组开发文档
 
-## 最新状态：0.1.1 预发布（2026-10-08 更新）
+## 最新状态：0.1.2 预发布准备（2026-10-08 更新）
 
-当前版本为 **`0.1.1` 预发布**，与 [README](<../README.md>) 的发布说明及 [gradle.properties](<../gradle.properties>) 中的 `mod_version=0.1.1` 一致。本节描述当前仓库的实现、资源与发布边界；历史验证与本次 V2 资源校验、离线构建结果分别记录，不代表全部游戏功能已验收。下方 **2026-09-02 章节是历史快照**，其中原版占位外观等描述不代表当前版本。
+当前版本为 **`0.1.2`**，用户已批准发布 GitHub `v0.1.2` 预发布；本轮离线构建与资源校验已完成，GitHub 预发布正在准备；游戏内专项验收仍未完成。版本配置见 [gradle.properties](<../gradle.properties>)，项目说明见 [README](<../README.md>)。本节描述当前仓库的实现、V2 资源与发布边界；历史 `0.1.1` 验证和当前 `0.1.2` 待验项分别记录，不代表全部游戏功能已验收。下方 **2026-09-02 章节是历史快照**，其中原版占位外观等描述不代表当前版本。
 
 ### 开发、构建与 CI
 
@@ -14,7 +14,7 @@ gradlew.bat runServer
 gradlew.bat build
 ```
 
-构建产物位于 `build/libs/`。[build.gradle](<../build.gradle>) 使用 `archivesName = mod_id` 与 `version = mod_version`，当前默认主 JAR 为 [archaeologycompass-0.1.1.jar](<../build/libs/archaeologycompass-0.1.1.jar>)，文件名不含 Minecraft 版本；发布时带上 Minecraft 版本是命名建议，不是现有构建规则。后续 Minecraft 版本须独立构建、测试和发布，不使用同一个 JAR 跨版本运行。
+构建产物位于 `build/libs/`。[build.gradle](<../build.gradle>) 使用 `archivesName = mod_id` 与 `version = mod_version`，当前主 JAR 为 [archaeologycompass-0.1.2.jar](<../build/libs/archaeologycompass-0.1.2.jar>)（已完成本轮构建和资源检查），文件名不含 Minecraft 版本；发布时带上 Minecraft 版本是命名建议，不是现有构建规则。后续 Minecraft 版本须独立构建、测试和发布，不使用同一个 JAR 跨版本运行。
 
 [CI 构建配置](<../.github/workflows/build.yml>) 在 push 和 pull request 时执行 `./gradlew build`，没有自动创建 Release 或上传发布附件的步骤；不能将触发 CI 等同于完成发布。
 
@@ -43,6 +43,7 @@ JEI 使用标准工作台分类自动识别原版有序配方，不需要专用�
 - [主模型](<../src/main/resources/assets/archaeologycompass/models/item/archaeology_compass.json>) 通过 `minecraft:angle` overrides 选择原创帧模型，保持原有方向映射，并非直接引用原版指南针贴图。
 - [全帧预览](<archaeology_compass_preview.png>)。
 - [旋转动画](<archaeology_compass_rotation.gif>)。
+- [400×400 项目图标](<archaeology_compass_icon_400.png>) 已同步 V2 铜壳外观，与当前正式贴图保持一致。
 
 ![32 帧贴图全览](<archaeology_compass_preview.png>)
 
@@ -57,16 +58,17 @@ py -3 generate_compass_assets.py
 
 ### 历史验证记录与当前待验项
 
-以下已完成事项沿用此前文档记录，不表示本次重新执行，也不自动证明 `0.1.1` 的全部交互已验收：
+以下已完成事项沿用此前文档记录，不表示本次重新执行，也不自动证明 `0.1.1` 或当前 `0.1.2` 的全部交互已验收：
 
 - 此前离线 Gradle build 已通过，当时的 JAR 已确认包含贴图、配方解锁资源及许可文件。
 - 此前已校验 32 帧均为不同的 32×32 RGBA 贴图、透明轮廓一致，模型引用和中英文提示键符合预期。
 - 此前开发客户端成功启动并进入单人世界，无崩溃。启动和资源加载正常不等于交互验收通过。
 - 2026-09-02 历史快照记录了单人基础人工验收，不覆盖后来新增的提示、配方书解锁与新版外观。
 - 此前 `0.1.1` 开发客户端已成功启动并进入单人世界，用户反馈该轮测试功能正常，但认为旧贴图偏薄；这属于用户人工测试反馈，不是独服、双客户端或性能测试记录。
-- 已按用户选择采用 V2 折中铜壳，正式生成器与候选贴图逐像素一致；32 帧均为不同的 32×32 RGBA 贴图且透明轮廓一致，方向映射、Java 实现和项目图标未变。V2 尚未重新进行游戏内外观验收。
-- 本次采用 V2 后，`gradlew.bat build --offline` 成功；已确认 JAR 内 32 帧贴图与批准的 V2 候选完全一致，模型方向映射未变，未混入候选预览或原版参考素材。测试任务显示 `NO-SOURCE`，此结果是构建与资源校验，不是自动化功能测试通过。
-- 独立服务端、双客户端、JEI 展示及性能压力仍需专项验证；此前“功能正常”反馈未逐项列出用例，不据此补记这些项目通过。
+- 此前已按用户选择正式采用 V2 折中铜壳，生成器与候选贴图逐像素一致；32 帧均为不同的 32×32 RGBA 贴图且透明轮廓一致，方向映射与 Java 实现未变。当前 [400×400 项目图标](<archaeology_compass_icon_400.png>) 也已同步 V2 外观；V2 尚未重新进行游戏内外观验收。
+- **历史 `0.1.1` 构建记录**：采用 V2 后，`gradlew.bat build --offline` 成功；当时已确认 JAR 内 32 帧贴图与批准的 V2 候选完全一致，模型方向映射未变，未混入候选预览或原版参考素材。测试任务显示 `NO-SOURCE`，此结果是历史构建与资源校验，不是自动化功能测试通过，也不是本轮 `0.1.2` 构建结果。
+- **本轮 `0.1.2` 构建与资源检查**：`gradlew.bat build --offline` 成功；[发行 JAR](<../build/libs/archaeologycompass-0.1.2.jar>) 的模组版本为 `0.1.2`，32 帧贴图与批准的 V2 完全一致，模型方向映射未变，配方、解锁、标签和语言资源均存在，三份许可文件与源码一致。测试任务为 `NO-SOURCE`，不等于自动化功能测试通过。发布内容见 [v0.1.2 说明](<releases/v0.1.2.md>)。
+- V2 游戏内外观、`0.1.2` JAR 干净实例安装、独立服务端与双客户端、JEI 展示及性能压力仍需专项验证；此前“功能正常”反馈未逐项列出用例，不据此补记这些项目通过。
 - 当前没有自动化功能测试函数；构建成功或保留开发测试运行配置，均不能描述为自动化功能测试通过。
 
 ### 许可与发布边界
@@ -84,11 +86,11 @@ py -3 generate_compass_assets.py
 
 整合包可在遵守许可条件的前提下收录和分发模组。[build.gradle](<../build.gradle>) 的 JAR 任务打包 [LICENSE](<../LICENSE>)、[LICENSE_ASSETS](<../LICENSE_ASSETS>) 和 [TEMPLATE_LICENSE.txt](<../TEMPLATE_LICENSE.txt>)；[模组元数据](<../src/main/resources/META-INF/neoforge.mods.toml>) 从 [gradle.properties](<../gradle.properties>) 展开 `MIT AND CC-BY-4.0`。
 
-既有 `v0.1.0` 标签、Release 和 JAR 附件保持不变，旧附件仍含 `All Rights Reserved` 元数据和较早的功能与外观。当前 `0.1.1` 预发布包含新版功能与美术，并使用当前仓库的分内容许可声明；不能据此将旧附件描述为已更新许可的构建，也不应覆盖旧附件。
+既有 `v0.1.0` 和 `v0.1.1` 的标签、Release 与附件保持不变，其中 `v0.1.0` 旧附件仍含 `All Rights Reserved` 元数据及较早功能外观。当前 `0.1.2` 沿用分内容许可声明，采用 V2 铜壳及同步的 [400×400 V2 图标](<archaeology_compass_icon_400.png>)；发行包已完成离线构建和资源校验，GitHub 预发布正在准备。不能把旧附件描述为本次构建，也不覆盖旧附件。
 
 ## 考古罗盘：历史实现快照（2026-09-02，非当前状态）
 
-本章保留当时的实现、目录结构与人工验收记录，**不是当前 `0.1.1` 的状态说明，也不是本次重新运行的验证结论**。原版指南针占位外观、当时的文件清单与后续工作仅适用于该历史快照；当前资源、配置和扫描行为以上方“最新状态”及下方“当前功能规则”为准。
+本章保留当时的实现、目录结构与人工验收记录，**不是当前 `0.1.2` 的状态说明，也不是本次重新运行的验证结论**。原版指南针占位外观、当时的文件清单与后续工作仅适用于该历史快照；当前资源、配置和扫描行为以上方“最新状态”及下方“当前功能规则”为准。
 
 ### 当时已实现
 
@@ -142,7 +144,7 @@ src/main/resources/
 
 ## 考古罗盘：当前功能规则与未实现优化
 
-本章描述当前 `0.1.1` 代码行为；明确标为“未实现”的优化不是现有功能、配置或验收结论。后面的通用教程用于开发参考，不代表本项目已实现所有示例模块。
+本章描述当前 `0.1.2` 代码行为；明确标为“未实现”的优化不是现有功能、配置或验收结论。后面的通用教程用于开发参考，不代表本项目已实现所有示例模块。
 
 ### 功能目标
 
@@ -247,7 +249,8 @@ Mod ID：archaeologycompass
 - [ ] 范围内无目标时持续旋转，首次空结果与等待结果提示可正确区分。
 - [ ] 仅扫描已加载区块，不触发区块加载。
 - [ ] 第三方候选加入标签并满足方块实体类型和 NBT 规则时可定位；只加入标签的非兼容实体不会误报。
-- [ ] 使用反馈、配方书实际解锁、新版外观与 JEI 配方展示分别验证。
+- [ ] 使用反馈、配方书实际解锁、V2 游戏内外观与 JEI 配方展示分别验证。
+- [ ] 在无开发环境的干净实例安装 `0.1.2` 主 JAR 并验证，不以开发客户端测试替代。
 - [ ] 双客户端连接独立服务端时，各自获得正确目标。
 - [ ] 检查配置边界，并对高扫描频率、大范围与多人场景进行 TPS 压力测试，不预先宣称无明显下降。
 
@@ -599,7 +602,7 @@ build/libs/
 发布包要求：
 
 - 使用 `build/libs/` 中非 `-sources`、非 `-dev` 的主 JAR；
-- 建议发布文件名带模组名、Minecraft 版本、模组版本；这不是本项目当前默认命名规则。[build.gradle](<../build.gradle>) 与 [gradle.properties](<../gradle.properties>) 当前生成 [archaeologycompass-0.1.1.jar](<../build/libs/archaeologycompass-0.1.1.jar>)，未自动附加 Minecraft 版本；
+- 建议发布文件名带模组名、Minecraft 版本、模组版本；这不是本项目当前默认命名规则。[build.gradle](<../build.gradle>) 与 [gradle.properties](<../gradle.properties>) 当前默认产物名为 `archaeologycompass-0.1.2.jar`（本轮构建待确认），未自动附加 Minecraft 版本；
 - 明确依赖的 NeoForge 与 Minecraft 版本范围；
 - 标记客户端、服务端或双端可用；
 - 提供变更记录、许可证、问题反馈地址；

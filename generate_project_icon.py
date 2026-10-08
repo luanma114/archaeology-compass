@@ -1,4 +1,4 @@
-"""Generate the CurseForge project icon from the existing compass artwork.
+"""Generate the CurseForge project icon from the live V2 compass artwork.
 
 Requires Python 3 and Pillow. This script is MIT-licensed; the generated
 artwork follows the project's CC BY 4.0 artwork license.

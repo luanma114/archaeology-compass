@@ -11,8 +11,9 @@ The following artwork is licensed under the Creative Commons Attribution
 - docs/archaeology_compass_rotation.gif
 - docs/archaeology_compass_icon_400.png
 
-The project icon adapts compass frame 19 with integer pixel scaling and a
-new dark survey-style background, copper corner marks, and a drop shadow.
+The project icon adapts V2 balanced-shell compass frame 19 with integer
+pixel scaling, a dark survey-style background, copper corner marks, and a
+drop shadow. The V2 shell uses two copper rows and a dark bottom edge.
 It is promotional artwork, not an in-game screenshot.
 
 In a built mod JAR, the corresponding artwork is located at:
