@@ -111,7 +111,7 @@ public final class ArchaeologyCompassEvents {
         int chunkRadius = (Config.HORIZONTAL_RADIUS.get() + 15) >> 4;
         int centerChunkX = center.getX() >> 4;
         int centerChunkZ = center.getZ() >> 4;
-        double maxDistanceSquared = (double) Config.HORIZONTAL_RADIUS.get() * Config.HORIZONTAL_RADIUS.get();
+        double maxHorizontalDistanceSquared = (double) Config.HORIZONTAL_RADIUS.get() * Config.HORIZONTAL_RADIUS.get();
         double nearestDistance = Double.MAX_VALUE;
         BlockPos nearest = null;
 
@@ -124,13 +124,20 @@ public final class ArchaeologyCompassEvents {
 
                 for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
                     BlockPos position = blockEntity.getBlockPos();
-                    if (Math.abs(position.getY() - center.getY()) > Config.VERTICAL_RADIUS.get()
+                    if (Math.abs(position.getY() - center.getY()) > Config.VERTICAL_RADIUS.get()) {
+                        continue;
+                    }
+
+                    double deltaX = position.getX() + 0.5 - player.getX();
+                    double deltaZ = position.getZ() + 0.5 - player.getZ();
+                    double horizontalDistanceSquared = deltaX * deltaX + deltaZ * deltaZ;
+                    if (horizontalDistanceSquared > maxHorizontalDistanceSquared
                             || !isValidArchaeologyTarget(level, blockEntity)) {
                         continue;
                     }
 
                     double distance = position.distToCenterSqr(player.position());
-                    if (distance <= maxDistanceSquared && distance < nearestDistance) {
+                    if (distance < nearestDistance) {
                         nearestDistance = distance;
                         nearest = position;
                     }
