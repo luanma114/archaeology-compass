@@ -10,7 +10,7 @@ ASSETS = ROOT / "src/main/resources/assets/archaeologycompass"
 TEXTURES = ASSETS / "textures/item"
 MODELS = ASSETS / "models/item"
 SIZE = 32
-CENTER = (15.5, 15.5)
+CENTER = (15.5, 14.5)
 PERSPECTIVE = 0.64
 PALETTE = {
     "outline": "#352821",
@@ -30,15 +30,32 @@ PALETTE = {
 def base_image():
     image = Image.new("RGBA", (SIZE, SIZE))
     draw = ImageDraw.Draw(image)
-    draw.ellipse((1, 6, 30, 26), fill=PALETTE["outline"])
-    draw.ellipse((2, 7, 29, 25), fill=PALETTE["copper_shadow"])
-    draw.ellipse((1, 5, 30, 25), fill=PALETTE["outline"])
-    draw.ellipse((2, 6, 29, 24), fill=PALETTE["copper"])
-    draw.arc((2, 6, 29, 24), 185, 310, fill=PALETTE["copper_light"], width=2)
-    draw.arc((2, 6, 29, 24), 10, 160, fill=PALETTE["copper_shadow"])
-    draw.ellipse((4, 7, 27, 23), fill=PALETTE["outline"])
-    draw.ellipse((5, 8, 26, 22), fill=PALETTE["dial_shadow"])
-    draw.ellipse((6, 9, 25, 22), fill=PALETTE["dial"])
+    top = (1, 4, 30, 24)
+    mask = Image.new("L", image.size)
+    ImageDraw.Draw(mask).ellipse(top, fill=255)
+    # V2: two copper side-wall rows plus one dark bottom edge.
+    for offset in range(3, -1, -1):
+        draw.ellipse((1, 4 + offset, 30, 24 + offset), fill=PALETTE["outline"])
+    for x in range(2, 30):
+        bottom = max(y for y in range(SIZE) if mask.getpixel((x, y)))
+        shades = (("#D39860", "#C68B56") if x < 11 else
+                  ("#B77B4C", "#AA7044") if x < 21 else
+                  ("#93603D", "#875636"))
+        for depth, color in enumerate(shades, start=1):
+            draw.point((x, bottom + depth), fill=color)
+    draw.ellipse(top, fill=PALETTE["outline"])
+    draw.ellipse((2, 5, 29, 23), fill=PALETTE["copper"])
+    draw.arc((2, 5, 29, 23), 185, 310, fill=PALETTE["copper_light"], width=2)
+    draw.arc((2, 5, 29, 23), 10, 160, fill="#A66D43")
+    # A copper bevel joins the top face to the shell without a heavy black seam.
+    for x in range(2, 30):
+        bottom = max(y for y in range(SIZE) if mask.getpixel((x, y)))
+        if bottom >= 17:
+            color = "#BC8453" if x < 11 else "#A36B42" if x < 21 else "#7E5033"
+            draw.point((x, bottom), fill=color)
+    draw.ellipse((4, 6, 27, 22), fill=PALETTE["outline"])
+    draw.ellipse((5, 7, 26, 21), fill=PALETTE["dial_shadow"])
+    draw.ellipse((6, 8, 25, 21), fill=PALETTE["dial"])
     for index in range(8):
         angle = index * math.tau / 8
         outer = (round(CENTER[0] + math.sin(angle) * 10),
@@ -46,7 +63,7 @@ def base_image():
         inner = (round(CENTER[0] + math.sin(angle) * 8.5),
                  round(CENTER[1] - math.cos(angle) * 8.5 * PERSPECTIVE))
         draw.line((inner, outer), fill=PALETTE["tick"])
-    for point in ((4, 19), (5, 20), (25, 20), (26, 19)):
+    for point in ((4, 18), (5, 19), (25, 19), (26, 18)):
         draw.point(point, fill=PALETTE["patina"])
     return image
 
@@ -78,8 +95,8 @@ def frame_image(index):
         draw.point((x, y), fill=PALETTE["tail"])
     for x, y, across in front:
         draw.point((x, y), fill=PALETTE["needle"] if across <= 0 else PALETTE["needle_shadow"])
-    draw.rectangle((14, 15, 17, 16), fill=PALETTE["outline"])
-    draw.line((15, 15, 16, 15), fill=PALETTE["copper_light"])
+    draw.rectangle((14, 14, 17, 15), fill=PALETTE["outline"])
+    draw.line((15, 14, 16, 14), fill=PALETTE["copper_light"])
     return image
 
 
@@ -88,7 +105,7 @@ def main():
     frames = [frame_image(index) for index in range(32)]
     for index, image in enumerate(frames):
         name = f"archaeology_compass_{index:02d}"
-        image.save(TEXTURES / f"{name}.png")
+        image.save(TEXTURES / f"{name}.png", optimize=True)
         model = {
             "parent": "minecraft:item/generated",
             "textures": {"layer0": f"archaeologycompass:item/{name}"},

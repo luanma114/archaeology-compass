@@ -2,7 +2,7 @@
 
 ## 最新状态：0.1.1 预发布（2026-10-08 更新）
 
-当前版本为 **`0.1.1` 预发布**，与 [README](<../README.md>) 的发布说明及 [gradle.properties](<../gradle.properties>) 中的 `mod_version=0.1.1` 一致。本节描述当前仓库的实现、资源与发布边界；验证部分保留既有历史记录，本次仅核对文档与代码、配置，未重新运行构建或测试。下方 **2026-09-02 章节是历史快照**，其中原版占位外观等描述不代表当前版本。
+当前版本为 **`0.1.1` 预发布**，与 [README](<../README.md>) 的发布说明及 [gradle.properties](<../gradle.properties>) 中的 `mod_version=0.1.1` 一致。本节描述当前仓库的实现、资源与发布边界；历史验证与本次 V2 资源校验、离线构建结果分别记录，不代表全部游戏功能已验收。下方 **2026-09-02 章节是历史快照**，其中原版占位外观等描述不代表当前版本。
 
 ### 开发、构建与 CI
 
@@ -36,7 +36,7 @@ JEI 使用标准工作台分类自动识别原版有序配方，不需要专用�
 
 ### 美术资源与生成
 
-当前美术为原创 32×32 铜制罗盘，包含 32 个角度帧。采用原版风格的斜视椭圆表盘、简洁刻度、铜色侧壁及少量氧化铜装饰，移除旧版怀表挂环与密集装饰。[资源生成脚本](<../generate_compass_assets.py>) 的指针纵向透视比例为 `0.64`，表盘同步增高，侧壁减薄。
+当前美术为原创 32×32 铜制罗盘，包含 32 个角度帧，已采用 **V2 折中铜壳**：表盘相对旧薄壳上移 1 像素，前侧为 2 行铜壳及 1 行暗色收边，减弱黑色分界和横向色带，保留左亮右暗的金属层次。[资源生成脚本](<../generate_compass_assets.py>) 已同步该设计，指针纵向透视比例仍为 `0.64`；方向帧顺序、模型谓词和 Java 指针逻辑不变。这里增强的是贴图的厚度感，不是增加模型几何厚度。
 
 - 贴图：[archaeology_compass_00.png](<../src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_00.png>) 至 [archaeology_compass_31.png](<../src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_31.png>)，均位于 `src/main/resources/assets/archaeologycompass/textures/item/`。
 - 帧模型：[archaeology_compass_00.json](<../src/main/resources/assets/archaeologycompass/models/item/archaeology_compass_00.json>) 至 [archaeology_compass_31.json](<../src/main/resources/assets/archaeologycompass/models/item/archaeology_compass_31.json>)，均位于 `src/main/resources/assets/archaeologycompass/models/item/`。
@@ -63,8 +63,10 @@ py -3 generate_compass_assets.py
 - 此前已校验 32 帧均为不同的 32×32 RGBA 贴图、透明轮廓一致，模型引用和中英文提示键符合预期。
 - 此前开发客户端成功启动并进入单人世界，无崩溃。启动和资源加载正常不等于交互验收通过。
 - 2026-09-02 历史快照记录了单人基础人工验收，不覆盖后来新增的提示、配方书解锁与新版外观。
-- 最新 `0.64` 透视比例及减薄侧壁的游戏内效果仍待验证；此前更扁的版本已取得玩家截图反馈。
-- 使用反馈、配方书实际解锁、JEI 展示、独立服务端和双客户端联机仍需专项验证。
+- 此前 `0.1.1` 开发客户端已成功启动并进入单人世界，用户反馈该轮测试功能正常，但认为旧贴图偏薄；这属于用户人工测试反馈，不是独服、双客户端或性能测试记录。
+- 已按用户选择采用 V2 折中铜壳，正式生成器与候选贴图逐像素一致；32 帧均为不同的 32×32 RGBA 贴图且透明轮廓一致，方向映射、Java 实现和项目图标未变。V2 尚未重新进行游戏内外观验收。
+- 本次采用 V2 后，`gradlew.bat build --offline` 成功；已确认 JAR 内 32 帧贴图与批准的 V2 候选完全一致，模型方向映射未变，未混入候选预览或原版参考素材。测试任务显示 `NO-SOURCE`，此结果是构建与资源校验，不是自动化功能测试通过。
+- 独立服务端、双客户端、JEI 展示及性能压力仍需专项验证；此前“功能正常”反馈未逐项列出用例，不据此补记这些项目通过。
 - 当前没有自动化功能测试函数；构建成功或保留开发测试运行配置，均不能描述为自动化功能测试通过。
 
 ### 许可与发布边界
