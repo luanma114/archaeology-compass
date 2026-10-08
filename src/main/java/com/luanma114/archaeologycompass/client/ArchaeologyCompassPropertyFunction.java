@@ -30,10 +30,10 @@ import net.neoforged.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public final class ArchaeologyCompassPropertyFunction implements ClampedItemPropertyFunction {
 
-    /** 无目标时指针旋转的角度步长。以 1/64 圈为一步，基准每 Tick 前进 2 步（每 32 Tick 一圈）。 */
+    /** 无目标旋转一圈的离散步数；每步为 1/64 圈，模型使用 32 个角度帧。 */
     private static final int SPIN_STEPS_PER_REVOLUTION = 64;
 
-    /** 每 Tick 前进的步数。3 步 = 基准的 1.5 倍（约每 21.3 Tick 转一圈）。 */
+    /** 每 Tick 前进 3 步，名义角速度为 3/64 圈每 Tick（约每 21.3 Tick 转一圈）。 */
     private static final int SPIN_STEPS_PER_TICK = 3;
 
     /** 指向目标时的平滑插值，避免玩家转身时指针瞬间跳变。 */
@@ -65,7 +65,7 @@ public final class ArchaeologyCompassPropertyFunction implements ClampedItemProp
         return getRotationTowardsTarget(entity, level.getGameTime(), target.position());
     }
 
-    /** 目标存在、与玩家同维度、且不处于玩家脚下时才视为有效。 */
+    /** 同步目标存在、与显示实体同维度且实体不与目标中心重合时才指向；不在客户端重查考古战利品。 */
     private static boolean isValidTarget(Entity entity, ExampleMod.Target target) {
         return target != null
                 && target.dimension() == entity.level().dimension()

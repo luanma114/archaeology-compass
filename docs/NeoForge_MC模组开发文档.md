@@ -1,12 +1,12 @@
 # NeoForge Minecraft 模组开发文档
 
-## 2026-10-08 更新：开发、资源与发布说明
+## 最新状态：0.1.1 预发布（2026-10-08 更新）
 
-本节记录当前仓库的新增实现及从 README 迁入的技术说明。下方 2026-09-02 状态为历史记录，其中原版占位外观等描述不代表当前版本。
+当前版本为 **`0.1.1` 预发布**，与 [README](<../README.md>) 的发布说明及 [gradle.properties](<../gradle.properties>) 中的 `mod_version=0.1.1` 一致。本节描述当前仓库的实现、资源与发布边界；验证部分保留既有历史记录，本次仅核对文档与代码、配置，未重新运行构建或测试。下方 **2026-09-02 章节是历史快照**，其中原版占位外观等描述不代表当前版本。
 
-### 开发与构建
+### 开发、构建与 CI
 
-环境：Minecraft `1.21.1`、NeoForge `21.1.235`、Java `21`。
+环境：Minecraft `1.21.1`、NeoForge `21.1.235`、Java `21`，版本与工具链分别见 [gradle.properties](<../gradle.properties>) 和 [build.gradle](<../build.gradle>)。
 
 ```bat
 gradlew.bat runClient
@@ -14,37 +14,39 @@ gradlew.bat runServer
 gradlew.bat build
 ```
 
-构建产物位于 `build/libs/`。后续 Minecraft 版本须独立构建、测试和发布，不使用同一个 JAR 跨版本运行。
+构建产物位于 `build/libs/`。[build.gradle](<../build.gradle>) 使用 `archivesName = mod_id` 与 `version = mod_version`，当前默认主 JAR 为 [archaeologycompass-0.1.1.jar](<../build/libs/archaeologycompass-0.1.1.jar>)，文件名不含 Minecraft 版本；发布时带上 Minecraft 版本是命名建议，不是现有构建规则。后续 Minecraft 版本须独立构建、测试和发布，不使用同一个 JAR 跨版本运行。
+
+[CI 构建配置](<../.github/workflows/build.yml>) 在 push 和 pull request 时执行 `./gradlew build`，没有自动创建 Release 或上传发布附件的步骤；不能将触发 CI 等同于完成发布。
 
 ### 使用反馈与配置同步
 
-- `client/ArchaeologyCompassClientEvents.java` 通过 `ItemTooltipEvent` 添加中英文用途说明，按住 Shift 展示扫描规则、范围与状态。
+- [ArchaeologyCompassClientEvents.java](<../src/main/java/com/luanma114/archaeologycompass/client/ArchaeologyCompassClientEvents.java>) 通过 `ItemTooltipEvent` 添加中英文用途说明，按住 Shift 展示扫描规则、范围与状态。
 - 范围读取 NeoForge 同步的 SERVER 配置，仅在 `Config.SPEC.isLoaded()` 且存在玩家上下文时显示，不使用客户端自定范围。
-- `ArchaeologyCompassClientState.receivedTarget` 区分尚未接收结果与已确认无目标。
-- `ArchaeologyCompassEvents.INITIALIZED_PLAYERS` 记录扫描初始化状态，首次没有目标时补发空目标包；失去罗盘、换维度、重生和退出时处理初始化状态。
-- 玩家没有持有罗盘、例如仅在物品列表中查看时，提示放入物品栏开始扫描，不将其他上下文误报为当前扫描结果。
+- [ArchaeologyCompassClientState.java](<../src/main/java/com/luanma114/archaeologycompass/ArchaeologyCompassClientState.java>) 中的 `receivedTarget` 区分尚未接收结果与已确认无目标。
+- [ArchaeologyCompassEvents.java](<../src/main/java/com/luanma114/archaeologycompass/ArchaeologyCompassEvents.java>) 中的 `INITIALIZED_PLAYERS` 记录扫描初始化状态，首次没有目标时补发空目标包；失去罗盘、换维度、重生和退出时处理初始化状态。普通物品栏或目标变化在下一次周期扫描时处理，默认每 `20` Tick 一次；登录、换维度、重生另有即时刷新入口。
+- 玩家物品栏中没有罗盘、例如仅在物品列表中查看时，提示放入物品栏开始扫描，不将其他上下文误报为当前扫描结果。
 
 ### 配方书与 JEI
 
-配方位于 `src/main/resources/data/archaeologycompass/recipe/archaeology_compass.json`，使用 `minecraft:crafting_shaped`。现有材料与摆放不变：上下刷子、左右铜锭、中央指南针，产出一个考古罗盘。
+[有序配方](<../src/main/resources/data/archaeologycompass/recipe/archaeology_compass.json>) 使用 `minecraft:crafting_shaped`。现有材料与摆放不变：上下刷子、左右铜锭、中央指南针，产出一个考古罗盘。
 
-解锁 advancement 位于 `src/main/resources/data/archaeologycompass/advancement/recipes/tools/archaeology_compass.json`。获得刷子、获得指南针和已解锁配方三个条件采用 OR 关系，奖励解锁对应配方。
+[配方解锁 advancement](<../src/main/resources/data/archaeologycompass/advancement/recipes/tools/archaeology_compass.json>) 中，获得刷子、获得指南针和已解锁配方三个条件采用 OR 关系，奖励解锁对应配方。
 
-JEI 使用标准工作台分类自动识别原版有序配方，不需要专用插件，也没有增加 JEI 编译或强制运行依赖。测试客户端尚未安装 JEI，其配方展示及交互仍待游戏内验证。
+JEI 使用标准工作台分类自动识别原版有序配方，不需要专用插件；[build.gradle](<../build.gradle>) 未增加 JEI 编译或强制运行依赖。既有验证记录中的测试客户端尚未安装 JEI，其配方展示及交互仍待游戏内验证。
 
 ### 美术资源与生成
 
-当前美术为原创 32×32 铜制罗盘，包含 32 个角度帧。采用原版风格的斜视椭圆表盘、简洁刻度、铜色侧壁及少量氧化铜装饰，移除旧版怀表挂环与密集装饰。最新指针纵向透视比例为 `0.64`，表盘同步增高，侧壁减薄。
+当前美术为原创 32×32 铜制罗盘，包含 32 个角度帧。采用原版风格的斜视椭圆表盘、简洁刻度、铜色侧壁及少量氧化铜装饰，移除旧版怀表挂环与密集装饰。[资源生成脚本](<../generate_compass_assets.py>) 的指针纵向透视比例为 `0.64`，表盘同步增高，侧壁减薄。
 
-- 贴图：`src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_00.png` 至 `archaeology_compass_31.png`。
-- 帧模型：`src/main/resources/assets/archaeologycompass/models/item/archaeology_compass_00.json` 至 `archaeology_compass_31.json`。
-- 主模型：`src/main/resources/assets/archaeologycompass/models/item/archaeology_compass.json`，通过 `minecraft:angle` overrides 选择帧，保持原有方向映射。
-- 全帧预览：`docs/archaeology_compass_preview.png`。
-- 旋转动画：`docs/archaeology_compass_rotation.gif`。
+- 贴图：[archaeology_compass_00.png](<../src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_00.png>) 至 [archaeology_compass_31.png](<../src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_31.png>)，均位于 `src/main/resources/assets/archaeologycompass/textures/item/`。
+- 帧模型：[archaeology_compass_00.json](<../src/main/resources/assets/archaeologycompass/models/item/archaeology_compass_00.json>) 至 [archaeology_compass_31.json](<../src/main/resources/assets/archaeologycompass/models/item/archaeology_compass_31.json>)，均位于 `src/main/resources/assets/archaeologycompass/models/item/`。
+- [主模型](<../src/main/resources/assets/archaeologycompass/models/item/archaeology_compass.json>) 通过 `minecraft:angle` overrides 选择原创帧模型，保持原有方向映射，并非直接引用原版指南针贴图。
+- [全帧预览](<archaeology_compass_preview.png>)。
+- [旋转动画](<archaeology_compass_rotation.gif>)。
 
-![32 帧贴图全览](archaeology_compass_preview.png)
+![32 帧贴图全览](<archaeology_compass_preview.png>)
 
-修改根目录 `generate_compass_assets.py` 可调整外观并重新生成贴图、帧模型及预览，需要 Python 3 与 Pillow：
+修改根目录 [generate_compass_assets.py](<../generate_compass_assets.py>) 可调整外观并重新生成贴图、帧模型及预览，需要 Python 3 与 Pillow：
 
 ```bat
 py -3 -m pip install Pillow
@@ -53,35 +55,40 @@ py -3 generate_compass_assets.py
 
 预览是资源动画，不是游戏截图，播放速度不代表游戏内指针转速。
 
-### 验证状态
+### 历史验证记录与当前待验项
 
-- 离线 Gradle build 已通过，JAR 已确认包含贴图、配方解锁资源及许可文件。
-- 32 帧均为不同的 32×32 RGBA 贴图，透明轮廓一致；模型引用和中英文提示键已校验。
-- 开发客户端成功启动并进入单人世界，无崩溃。启动和资源加载正常不等于交互验收通过。
+以下已完成事项沿用此前文档记录，不表示本次重新执行，也不自动证明 `0.1.1` 的全部交互已验收：
+
+- 此前离线 Gradle build 已通过，当时的 JAR 已确认包含贴图、配方解锁资源及许可文件。
+- 此前已校验 32 帧均为不同的 32×32 RGBA 贴图、透明轮廓一致，模型引用和中英文提示键符合预期。
+- 此前开发客户端成功启动并进入单人世界，无崩溃。启动和资源加载正常不等于交互验收通过。
+- 2026-09-02 历史快照记录了单人基础人工验收，不覆盖后来新增的提示、配方书解锁与新版外观。
 - 最新 `0.64` 透视比例及减薄侧壁的游戏内效果仍待验证；此前更扁的版本已取得玩家截图反馈。
 - 使用反馈、配方书实际解锁、JEI 展示、独立服务端和双客户端联机仍需专项验证。
-- 当前没有自动化测试函数，不能将构建成功描述为自动化功能测试通过。
+- 当前没有自动化功能测试函数；构建成功或保留开发测试运行配置，均不能描述为自动化功能测试通过。
 
 ### 许可与发布边界
 
 本项目按内容分别授权，不是全部文件同时适用两种许可证：
 
-- Java、生成脚本、模型 JSON、配置和项目文档等非美术内容采用 MIT，见根目录 `LICENSE`。
-- 罗盘 PNG 贴图、全帧 PNG 预览和 GIF 旋转动画采用 CC BY 4.0，具体范围和完整条款链接见根目录 `LICENSE_ASSETS`。
-- NeoForged MDK 模板保留原有 MIT 版权与许可声明，见 `TEMPLATE_LICENSE.txt`。第三方材料和 Minecraft 资源不属于项目授权范围。
+- Java、生成脚本、模型 JSON、配置和项目文档等非美术内容采用 MIT，见根目录 [LICENSE](<../LICENSE>)。
+- 罗盘 PNG 贴图、全帧 PNG 预览和 GIF 旋转动画采用 CC BY 4.0，具体范围和完整条款链接见根目录 [LICENSE_ASSETS](<../LICENSE_ASSETS>)。
+- NeoForged MDK 模板保留原有 MIT 版权与许可声明，见 [TEMPLATE_LICENSE.txt](<../TEMPLATE_LICENSE.txt>)。第三方材料和 Minecraft 资源不属于项目授权范围。
 - 生成脚本采用 MIT，不改变仓库已生成美术资源的 CC BY 4.0 授权。
 
 美术署名示例：
 
 > Archaeology Compass artwork by luanma114, licensed under CC BY 4.0. Source: https://github.com/luanma114/archaeology-compass · License: https://creativecommons.org/licenses/by/4.0/ 。分发修改版时须补充修改说明。
 
-整合包可在遵守许可条件的前提下收录和分发模组。Gradle 的 JAR 任务打包 `LICENSE`、`LICENSE_ASSETS` 和 `TEMPLATE_LICENSE.txt`，模组元数据使用 `MIT AND CC-BY-4.0`。
+整合包可在遵守许可条件的前提下收录和分发模组。[build.gradle](<../build.gradle>) 的 JAR 任务打包 [LICENSE](<../LICENSE>)、[LICENSE_ASSETS](<../LICENSE_ASSETS>) 和 [TEMPLATE_LICENSE.txt](<../TEMPLATE_LICENSE.txt>)；[模组元数据](<../src/main/resources/META-INF/neoforge.mods.toml>) 从 [gradle.properties](<../gradle.properties>) 展开 `MIT AND CC-BY-4.0`。
 
-已发布 `v0.1.0` 标签、Release 和 JAR 附件保持不变，旧附件仍含 `All Rights Reserved` 元数据和较早的功能与外观。本次许可声明适用于当前仓库及后续构建，不能将旧附件描述为已更新许可的构建。新功能、许可及外观应在后续版本重新构建发布，避免覆盖旧附件。
+既有 `v0.1.0` 标签、Release 和 JAR 附件保持不变，旧附件仍含 `All Rights Reserved` 元数据和较早的功能与外观。当前 `0.1.1` 预发布包含新版功能与美术，并使用当前仓库的分内容许可声明；不能据此将旧附件描述为已更新许可的构建，也不应覆盖旧附件。
 
-## 考古罗盘：当前实现状态（2026-09-02）
+## 考古罗盘：历史实现快照（2026-09-02，非当前状态）
 
-### 已实现
+本章保留当时的实现、目录结构与人工验收记录，**不是当前 `0.1.1` 的状态说明，也不是本次重新运行的验证结论**。原版指南针占位外观、当时的文件清单与后续工作仅适用于该历史快照；当前资源、配置和扫描行为以上方“最新状态”及下方“当前功能规则”为准。
+
+### 当时已实现
 
 | 模块 | 实现 |
 | --- | --- |
@@ -98,7 +105,7 @@ py -3 generate_compass_assets.py
 | 网络隔离 | 网络层仅依赖无渲染 API 的 `ArchaeologyCompassClientState`；渲染/指针属性等客户端代码位于 `client/ArchaeologyCompassClient.java`，由 `ExampleMod` 在 `Dist.CLIENT` 分支调用，独立服务端不加载该客户端类 |
 | 验证 | `gradlew.bat build` 成功；开发客户端启动时曾因空 `@EventBusSubscriber` 崩溃，已移除该标注并修复 |
 
-### 当前代码结构
+### 当时代码结构（历史清单）
 
 ```text
 src/main/java/com/luanma114/archaeologycompass/
@@ -123,28 +130,31 @@ src/main/resources/
    └─ tags/block/archaeology_targets.json
 ```
 
-### 已知限制与后续工作
+### 当时已知限制与后续工作（历史记录）
 
 1. 已完成单人基础人工验收（配方、目标指向、无目标旋转、刷扫、刷空、物品栏内/手中持有、登录、换维度）。
 2. 尚未完成独立服务端与双客户端联机测试。
 3. 扫描已改为方块实体遍历，但大量已加载区块或大量玩家时仍应进行 TPS 压力测试；必要时增加分帧预算或区块索引。
-4. 当前使用原版指南针外观作为开发占位。正式发布前可替换为自制模型和纹理；替换时需保留 `minecraft:angle` 指针属性注册以维持指向逻辑，或实现等价客户端模型属性。
+4. 当时使用原版指南针外观作为开发占位，曾计划正式发布前替换为自制模型和纹理；替换需保留 `minecraft:angle` 指针属性注册或实现等价客户端模型属性。这是历史计划，当前原创外观以上方最新状态为准。
 5. 客户端渲染/指针属性代码已隔离在 `client/`（`Dist.CLIENT`）：`ArchaeologyCompassClient` 注册 `minecraft:angle` 属性，`ArchaeologyCompassPropertyFunction` 计算指针角度。未来任何 `Minecraft`、`ItemProperties`、模型或渲染器引用必须放进该 `Dist.CLIENT` 专属类，通用网络类不得直接引用。
 
-## 考古罗盘：功能需求规格
+## 考古罗盘：当前功能规则与未实现优化
+
+本章描述当前 `0.1.1` 代码行为；明确标为“未实现”的优化不是现有功能、配置或验收结论。后面的通用教程用于开发参考，不代表本项目已实现所有示例模块。
 
 ### 功能目标
 
-新增物品“考古罗盘”。玩家物品栏中拥有它时表现为指南针：指针持续指向扫描范围内最近的可考古方块。范围内无目标时，指针持续旋转。
+新增物品“考古罗盘”。玩家物品栏中拥有它时表现为指南针：指针指向扫描范围内最近的可考古方块，并随服务端扫描结果更新。范围内无目标时，指针持续顺时针旋转。
 
 ### 目标方块与兼容规则
 
-- 默认候选：原版 `minecraft:suspicious_sand`、`minecraft:suspicious_gravel`；仅当对应方块实体仍含未刷出的考古战利品时，才视为有效目标。
-- 使用数据包方块标签 `<mod_id>:archaeology_targets` 定义候选方块。发布前将全文 `<mod_id>` 替换为正式 Mod ID，例如 `archaeology_compass`。
-- 模组配置提供扫描半径、扫描间隔、最大扫描量等数值。
-- 其他模组或整合包可通过数据包向 `<mod_id>:archaeology_targets` 添加候选方块；兼容方块还须由代码定义有效性判定，不能只依赖方块标签。
+- 默认候选为原版 `minecraft:suspicious_sand`、`minecraft:suspicious_gravel`，由 [目标方块标签](<../src/main/resources/data/archaeologycompass/tags/block/archaeology_targets.json>) 定义。
+- 正式 Mod ID 已是 `archaeologycompass`，见 [gradle.properties](<../gradle.properties>) 和 [ExampleMod.java](<../src/main/java/com/luanma114/archaeologycompass/ExampleMod.java>)；标签 ID 为 `archaeologycompass:archaeology_targets`，不是 `archaeology_compass:archaeology_targets`，无需替换占位 ID。
+- [ArchaeologyCompassEvents.java](<../src/main/java/com/luanma114/archaeologycompass/ArchaeologyCompassEvents.java>) 要求候选同时属于该标签、方块实体是 `BrushableBlockEntity`（包括其子类），且保存的 NBT 中存在 `LootTable` 或 `item` 键。首次刷扫后由 `LootTable` 转为 `item` 时仍有效；完全刷出后两者均不存在，不再定位。
+- 其他模组或整合包可通过数据包向 `archaeologycompass:archaeology_targets` 添加候选方块，但**仅加入标签不足以兼容**，还须满足上述方块实体类型与 NBT 规则。任意自定义考古方块实体的适配未实现。
+- 当前服务端配置只有水平半径、垂直半径、扫描间隔三项，没有最大扫描量或单 Tick 工作预算配置。
 
-标签示例：
+[目标标签文件](<../src/main/resources/data/archaeologycompass/tags/block/archaeology_targets.json>) 的内容与位置：
 
 ```json
 {
@@ -156,77 +166,88 @@ src/main/resources/
 }
 ```
 
-文件位置：
-
 ```text
-src/main/resources/data/<mod_id>/tags/block/archaeology_targets.json
+src/main/resources/data/archaeologycompass/tags/block/archaeology_targets.json
 ```
 
-### 定位与锁定规则
+### 定位与更新时序
 
-1. 玩家物品栏（含主手、副手）中存在考古罗盘时，服务端按扫描间隔搜索目标。
-2. 在当前维度、以玩家位置为中心的水平半径和垂直范围内搜索标签目标方块。
-3. 从完整扫描结果的有效目标中选择欧氏距离最近者，记录其维度与方块坐标。
-4. 已锁定目标仍存在、仍属于标签、仍通过考古战利品有效性判定、仍在范围内、仍与玩家处于同一维度时，继续指向它。
-5. 锁定目标被刷空、被挖掘、超出范围或玩家切换维度时，立即清除锁定状态；仅在下一次完整扫描结束后选择新目标。扫描结果中的更近目标可在该次完整扫描结束后替换当前锁定目标。
-6. 无有效目标时清除锁定状态，客户端显示持续旋转指针。
+以下行为由 [ArchaeologyCompassEvents.java](<../src/main/java/com/luanma114/archaeologycompass/ArchaeologyCompassEvents.java>) 实现：
 
-### 性能规则
+1. 玩家物品栏（含主手、副手）中存在考古罗盘时，服务端在 `PlayerTickEvent.Post` 中按 `player.tickCount % scanIntervalTicks == 0` 触发周期扫描；默认每 `20` Tick 一次，正常 `20 TPS` 下约一秒。
+2. 一次调用在同一个 Tick 内遍历玩家当前维度、附近已加载区块的方块实体。水平距离按目标方块中心相对玩家实际位置计算；垂直范围按目标方块 Y 与玩家方块坐标 Y 的差判断。
+3. 从本次范围内全部有效候选中，按方块中心到玩家位置的三维欧氏距离选择最近者，记录维度与方块坐标。每次重新计算最近目标，没有独立的“优先保留旧锁定”流程。
+4. 目标被刷空、挖掉、移出范围，或玩家在普通游戏过程中失去罗盘时，**在下一次周期更新时**重新扫描或清除缓存；不是每 Tick 即时清除。在默认配置下通常最多等待约 `20` Tick（服务器卡顿时实际时间可更长）。同次扫描找到其他目标时可直接替换，不额外等待下一轮。
+5. 登录、换维度和重生有专门事件入口，立即按物品栏状态刷新当前维度目标；退出清理服务端内存缓存。物品栏中新获得罗盘通常等待下一次周期更新，没有单独的拾取即扫事件。
+6. 本次无有效目标时清除缓存，客户端显示持续旋转指针。目标坐标或维度变化、旧目标被清除时发送 S2C 状态；首次扫描确认无目标时也补发空目标包。
 
-不得每 Tick 扫描半径内全部方块。默认设计：
+### 当前性能规则
 
-- 服务端每 `20` Tick 扫描一次；
-- 默认水平半径 `64` 格，垂直半径 `32` 格；
-- 每次仅检查已加载区块；不为扫描强制加载区块；
-- 搜索按区块和高度分批执行；`maxBlocksPerScan` 为单 Tick 工作预算，不是一次搜索的总上限；
-- 一次扫描跨多个 Tick 完成。仅在完成覆盖范围内全部已加载候选位置后，才用结果更新最近目标；
-- 最近目标结果按玩家缓存，锁定目标失效时立即清除；下一次完整扫描结束后再更新；
-- 扫描半径、垂直半径、间隔、单 Tick 工作预算均放入服务端配置。
+当前实现不是遍历范围内每一个方块，也不是跨 Tick 分帧扫描：
 
-若完整三维扫描仍造成卡顿，改为“已知目标索引”：区块加载时记录标签方块坐标，方块变化时维护索引，罗盘只查询当前已加载区块的索引。
+- 默认每 `20` Tick 扫描一次，默认水平半径 `64` 格、垂直半径 `32` 格；
+- 通过 `getChunkNow` 只读取已加载区块，不为扫描强制加载区块；
+- 按区块读取 `chunk.getBlockEntities().values()`，在**同一次调用、同一个 Tick 内**完成方块实体遍历与最近目标选择；
+- 按玩家 UUID 缓存上次目标，用于比较结果并减少重复同步，不是目标索引；
+- [Config.java](<../src/main/java/com/luanma114/archaeologycompass/Config.java>) 只配置两个半径和扫描间隔。大量已加载区块或大量玩家时仍需 TPS 压力测试，当前没有实测的性能保证。
+
+### 未来性能优化方案（明确未实现）
+
+若压力测试证明周期方块实体遍历仍造成卡顿，可考虑以下方案；**当前没有对应实现或配置**：
+
+1. **分帧工作预算**：将已加载区块中的候选遍历分配到多个 Tick，以拟议的 `maxBlocksPerScan`（例如 `8192`）作为单 Tick 工作预算，而不是整次扫描的总上限。须处理扫描期间玩家移动、区块卸载和候选变化，并在完整搜索完成后更新最近目标。该值尚未进入配置规范，不应写入现有配置作为有效选项。
+2. **已知目标索引**：在区块加载时记录候选坐标，在方块或方块实体状态变化时维护索引，卸载时移除；罗盘仅查询当前已加载区块索引，并继续执行有效性与范围检查。该索引尚不存在。
+
+这些方案保留为后续设计，不改变当前“一次 Tick 内完整遍历、周期刷新目标”的语义；是否实施须先专项测量，再调整实现及验证。
 
 ### 客户端表现与同步
 
-- 服务端为权威端：搜索、锁定、失效判定均在服务端执行。
-- 服务端仅向拥有罗盘的玩家同步锁定目标坐标或“无目标”状态（通过显式 S2C 包，不依赖物品数据组件同步）。
-- 客户端从 S2C 包状态读取目标，根据玩家朝向和目标坐标计算罗盘指针角度。
-- 无目标时客户端使用持续顺时针旋转角度；不向服务端发送旋转状态。
-- 物品模型首发按 Minecraft `1.21.1` 对应 NeoForge API 实现。模型 JSON、物品模型定义和客户端属性注册在后续版本可能变化；版本专属代码不得直接复制到其他版本分支。
-- 独立服务端不得加载渲染、模型属性或其他客户端专属类。
+- 服务端为权威端：搜索、失效判定与目标缓存均在服务端执行。
+- 服务端通过显式 S2C 包向对应玩家同步目标坐标或“无目标”状态，不依赖物品数据组件同步。失去罗盘的玩家仍可能收到清除旧目标的空状态包。
+- 客户端从 S2C 状态读取目标，根据玩家朝向和目标坐标计算罗盘指针角度；无目标时持续顺时针旋转，不向服务端发送旋转状态。
+- [主模型](<../src/main/resources/assets/archaeologycompass/models/item/archaeology_compass.json>) 使用原创 32 帧资源及 `minecraft:angle` overrides，客户端属性注册以 Minecraft `1.21.1` 对应 NeoForge API 为准。模型 JSON、物品模型定义和客户端 API 在后续版本可能变化，版本专属代码不得直接复制到其他版本分支。
+- 独立服务端不得加载渲染、模型属性或其他客户端专属类；隔离代码不等于已经完成独立服务端实机验收。
 
-### 配置项建议
+### 当前配置项（仅三项）
 
-| 键 | 默认值 | 含义 |
-| --- | ---: | --- |
-| `horizontalRadius` | `64` | 水平搜索半径，单位：格 |
-| `verticalRadius` | `32` | 垂直搜索半径，单位：格 |
-| `scanIntervalTicks` | `20` | 搜索间隔，单位：Tick |
-| `maxBlocksPerScan` | `8192` | 每 Tick 最大候选方块检查数；完整扫描可跨多个 Tick（预留，当前实现按方块实体一次性遍历） |
+定义及允许范围见 [Config.java](<../src/main/java/com/luanma114/archaeologycompass/Config.java>)，由 [ExampleMod.java](<../src/main/java/com/luanma114/archaeologycompass/ExampleMod.java>) 注册为 SERVER 配置：
 
-配置必须限制合理上下限，防止服务器将半径设得过大后发生卡顿。当前实现中，只要玩家物品栏内存在罗盘即扫描，无需 `requireHoldingCompass` 开关。
+| 键 | 默认值 | 允许范围 | 含义 |
+| --- | ---: | --- | --- |
+| `horizontalRadius` | `64` | `1`–`128` | 水平搜索半径，单位：格 |
+| `verticalRadius` | `32` | `1`–`64` | 上下搜索半径，单位：格 |
+| `scanIntervalTicks` | `20` | `1`–`1200` | 周期搜索间隔，单位：Tick |
 
-### 资源与注册清单
+配置上下限用于限制不合理数值，不保证所有允许组合都没有性能问题。当前只要玩家物品栏内存在罗盘即扫描，无需且不存在 `requireHoldingCompass` 开关；`maxBlocksPerScan` 也不是现有配置项。
+
+### 当前资源与注册清单
+
+[ExampleMod.java](<../src/main/java/com/luanma114/archaeologycompass/ExampleMod.java>) 注册物品并加入“工具与实用物品”创造模式标签页；[有序配方](<../src/main/resources/data/archaeologycompass/recipe/archaeology_compass.json>)、[配方解锁 advancement](<../src/main/resources/data/archaeologycompass/advancement/recipes/tools/archaeology_compass.json>)、[中文翻译](<../src/main/resources/assets/archaeologycompass/lang/zh_cn.json>) 与 [英文翻译](<../src/main/resources/assets/archaeologycompass/lang/en_us.json>) 已有对应资源。
 
 ```text
-注册 ID：archaeology_compass
-翻译键：item.<mod_id>.archaeology_compass
-模型：按锁定的精确 Minecraft/NeoForge 版本实现
-纹理：assets/<mod_id>/textures/item/archaeology_compass.png
-方块标签：data/<mod_id>/tags/block/archaeology_targets.json
+Mod ID：archaeologycompass
+完整物品 ID：archaeologycompass:archaeology_compass
+注册路径：archaeology_compass
+翻译键：item.archaeologycompass.archaeology_compass
+主模型：src/main/resources/assets/archaeologycompass/models/item/archaeology_compass.json
+帧模型：src/main/resources/assets/archaeologycompass/models/item/archaeology_compass_00.json 至 archaeology_compass_31.json
+原创纹理：src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_00.png 至 archaeology_compass_31.png
+方块标签：src/main/resources/data/archaeologycompass/tags/block/archaeology_targets.json
 ```
 
-物品需加入创造模式标签页，并添加合成配方和中英文翻译。
+### 后续专项验收清单（不是已通过记录）
 
-### 验收标准
+以下保留为待执行检查；既有单人验收记录见历史快照，不据此勾选当前预发布的专项测试：
 
-- [ ] 默认仅定位仍有未刷出战利品的可疑沙子与可疑沙砾。
-- [ ] 每次完整扫描结束后，在多个目标中选择最近目标。
-- [ ] 当前锁定目标被清除、超出范围或换维度后，自动更新。
-- [ ] 范围内无目标时，指针持续旋转。
+- [ ] 默认仅定位符合 `BrushableBlockEntity` 与 `LootTable`/`item` 规则的可疑沙子与可疑沙砾。
+- [ ] 每次单 Tick 完整扫描后，在多个有效候选中选择最近目标。
+- [ ] 刷空、挖掘、离开范围或失去罗盘在下一周期更新；登录、换维度、重生按事件即时刷新。
+- [ ] 范围内无目标时持续旋转，首次空结果与等待结果提示可正确区分。
 - [ ] 仅扫描已加载区块，不触发区块加载。
-- [ ] 其他模组方块加入标签后可被定位。
+- [ ] 第三方候选加入标签并满足方块实体类型和 NBT 规则时可定位；只加入标签的非兼容实体不会误报。
+- [ ] 使用反馈、配方书实际解锁、新版外观与 JEI 配方展示分别验证。
 - [ ] 双客户端连接独立服务端时，各自获得正确目标。
-- [ ] 高扫描频率和大范围配置被限制，服务器 TPS 无明显下降。
+- [ ] 检查配置边界，并对高扫描频率、大范围与多人场景进行 TPS 压力测试，不预先宣称无明显下降。
 
 ## 1. 目标与范围
 
@@ -576,7 +597,7 @@ build/libs/
 发布包要求：
 
 - 使用 `build/libs/` 中非 `-sources`、非 `-dev` 的主 JAR；
-- 文件名带模组名、Minecraft 版本、模组版本；
+- 建议发布文件名带模组名、Minecraft 版本、模组版本；这不是本项目当前默认命名规则。[build.gradle](<../build.gradle>) 与 [gradle.properties](<../gradle.properties>) 当前生成 [archaeologycompass-0.1.1.jar](<../build/libs/archaeologycompass-0.1.1.jar>)，未自动附加 Minecraft 版本；
 - 明确依赖的 NeoForge 与 Minecraft 版本范围；
 - 标记客户端、服务端或双端可用；
 - 提供变更记录、许可证、问题反馈地址；

@@ -37,16 +37,16 @@ public final class ArchaeologyCompassClient {
     }
 
     /**
-     * 注册考古罗盘的“angle”指针属性，让继承的原版指南针模型能随目标旋转。
+     * 注册考古罗盘的“angle”指针属性，让原创 32 帧罗盘模型随目标旋转。
      *
-     * <p>原版 {@code minecraft:item/compass} 模型通过 {@code minecraft:angle} 谓词在 32 帧纹理中
-     * 选择一帧，但该属性是按物品单独注册的，原版只注册给指南针和追溯指针。这里为考古罗盘
-     * 复用同一属性，并由 {@link ArchaeologyCompassPropertyFunction} 从 {@link ArchaeologyCompassClientState}
-     * 读取服务端通过 S2C 包下发的目标坐标。</p>
+     * <p>考古罗盘主模型通过 {@code minecraft:angle} 谓词选择原创贴图的角度帧，
+     * 并沿用原版指南针的帧角度映射。该属性按物品单独注册，需要为考古罗盘绑定
+     * {@link ArchaeologyCompassPropertyFunction}，从 {@link ArchaeologyCompassClientState}
+     * 读取服务端通过 S2C 包下发的目标坐标；不继承原版指南针模型或使用原版贴图。</p>
      *
      * <ul>
-     *   <li>存在有效目标：指针指向它（与原版指向逻辑一致）；</li>
-     *   <li>无目标或目标失效：指针匀速顺时针旋转。</li>
+     *   <li>同步目标存在且通过客户端维度、位置检查：指针指向它；</li>
+     *   <li>无目标或未通过客户端检查：指针匀速顺时针旋转；刷空等失效由服务端下一次扫描同步。</li>
      * </ul>
      */
     private static void registerItemProperties() {

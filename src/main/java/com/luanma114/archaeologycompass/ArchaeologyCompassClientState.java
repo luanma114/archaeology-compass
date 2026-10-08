@@ -7,7 +7,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
  * 通用目标状态接收器。
  *
  * <p>此类不引用任何 Minecraft 客户端、模型或渲染 API，因此可以被双端网络注册器安全调用。
- * 后续纯客户端渲染类只读取 {@link #getTarget()}，不要反向让网络类引用渲染类。</p>
+ * 客户端指针属性和提示事件读取此状态；通用网络类不反向引用客户端渲染类。</p>
  */
 public final class ArchaeologyCompassClientState {
     /**
@@ -17,6 +17,7 @@ public final class ArchaeologyCompassClientState {
      * 保证可见性。{@link ExampleMod.Target} 是不可变记录，读取线程只会拿到完整的快照。</p>
      */
     private static volatile ExampleMod.Target target;
+    /** 是否收到当前连接的扫描状态；区分等待首包与已确认无目标。 */
     private static volatile boolean receivedTarget;
 
     /** 将服务端 S2C 包中的目标写入本地状态。 */
@@ -25,6 +26,7 @@ public final class ArchaeologyCompassClientState {
         receivedTarget = true;
     }
 
+    /** 当前连接是否已接收扫描状态，供提示区分等待结果与未找到目标。 */
     public static boolean hasReceivedTarget() {
         return receivedTarget;
     }
@@ -35,10 +37,10 @@ public final class ArchaeologyCompassClientState {
     }
 
     /**
-     * 清空本地目标。
+     * 清空本地目标和首次接收标记。
      *
-     * <p>玩家断开连接或切换世界时由客户端事件调用，避免残留上一个存档/服务器的目标，
-     * 使指针在进入新世界且尚未收到新 S2C 包前错误指向旧坐标。</p>
+     * <p>客户端登出事件调用本方法，避免残留上一个存档或服务器的状态，
+     * 防止进入新世界且尚未收到新 S2C 包时，指针错误地指向旧坐标。</p>
      */
     public static void reset() {
         target = null;

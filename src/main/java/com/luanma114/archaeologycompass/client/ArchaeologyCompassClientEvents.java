@@ -18,8 +18,8 @@ import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 /**
  * 考古罗盘的客户端游戏事件处理。
  *
- * <p>仅在物理客户端注册（{@code Dist.CLIENT}），监听与连接生命周期相关的事件，
- * 在玩家断开连接或切换世界时清空本地目标状态。</p>
+ * <p>仅在物理客户端注册（{@code Dist.CLIENT}）。登出时清空目标和首次接收标记，
+ * 防止状态跨连接残留；物品提示展示用途，并在按住 Shift 时展示扫描规则、服务端范围和搜索状态。</p>
  */
 @EventBusSubscriber(modid = ExampleMod.MOD_ID, value = Dist.CLIENT)
 public final class ArchaeologyCompassClientEvents {
@@ -30,6 +30,7 @@ public final class ArchaeologyCompassClientEvents {
         ArchaeologyCompassClientState.reset();
     }
 
+    /** 展示用途与 Shift 详情；范围只读取已加载的 SERVER 配置，搜索状态使用收到的 S2C 结果。 */
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
         if (!event.getItemStack().is(ExampleMod.ARCHAEOLOGY_COMPASS.get())) {

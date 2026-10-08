@@ -11,8 +11,8 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 /**
  * 考古罗盘网络包注册与发送入口。
  *
- * <p>网络层只引用 {@link ArchaeologyCompassClientState}，其没有客户端专属依赖。后续模型和渲染代码
- * 放在独立的 {@code Dist.CLIENT} 类中，并只读取该状态，避免独立服务端加载客户端类。</p>
+ * <p>网络层只引用 {@link ArchaeologyCompassClientState}，其没有客户端专属依赖。模型属性与渲染代码
+ * 已放在独立的 {@code Dist.CLIENT} 类中，并只读取该状态，避免独立服务端加载客户端类。</p>
  */
 public final class ArchaeologyCompassNetwork {
     /** 当前考古罗盘目标同步协议版本。修改包字段顺序或类型时必须递增。 */
@@ -38,7 +38,7 @@ public final class ArchaeologyCompassNetwork {
     }
 
     /**
-     * 把当前目标状态同步给一个玩家。调用方必须先确认状态实际发生变化。
+     * 把当前目标状态同步给一个玩家。用于目标变化、清除旧目标，或首次扫描等初始化场景。
      *
      * @param player 接收目标的服务端玩家
      * @param target 新目标；{@code null} 表示客户端应进入无目标旋转状态

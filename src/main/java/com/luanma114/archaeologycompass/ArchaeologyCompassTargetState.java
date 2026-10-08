@@ -9,13 +9,13 @@ import org.jetbrains.annotations.Nullable;
 /**
  * 考古罗盘的服务端目标缓存。
  *
- * <p>每个在线玩家对应一个最近考古目标。缓存是下一步网络同步和客户端指针渲染的唯一数据来源。
- * 本类只保存状态，不扫描世界，也不引用客户端代码。</p>
+ * <p>每个拥有罗盘且扫描到目标的玩家对应一个最近考古目标。扫描事件通过此缓存判断目标是否变化，
+ * 再决定是否向客户端同步；客户端渲染读取同步后的本地状态。本类不扫描世界，也不引用客户端代码。</p>
  *
- * <p>当前缓存仅在服务器本次运行期间存在，不写入玩家存档。玩家重新登录后由下一次扫描重新建立目标。</p>
+ * <p>缓存只存在于服务器进程内，不写入玩家存档。退出时清理，重新登录时由登录事件重新扫描建立。</p>
  */
 public final class ArchaeologyCompassTargetState {
-    /** 以玩家 UUID 为键保存目标；值永远是有效目标，不使用 null 作为 Map 值。 */
+    /** 以玩家 UUID 为键保存上次扫描选出的目标；无目标时移除键，不使用 null 作为 Map 值。 */
     private static final Map<UUID, ExampleMod.Target> TARGETS = new HashMap<>();
 
     /**
@@ -32,7 +32,7 @@ public final class ArchaeologyCompassTargetState {
     /**
      * 保存本次完整扫描找到的最近目标。
      *
-     * <p>仅当新旧目标不同才写入 Map。下一步网络模块将以此返回值决定是否发送 S2C 同步包，
+     * <p>写入本次目标并比较旧值，由扫描事件根据返回值决定是否发送 S2C 同步包，
      * 避免每个扫描周期重复发送相同坐标。</p>
      *
      * @param playerId 玩家 UUID
@@ -47,8 +47,8 @@ public final class ArchaeologyCompassTargetState {
     /**
      * 清除玩家目标。
      *
-     * <p>用于玩家物品栏中没有罗盘或本次扫描未发现候选方块。下一步网络模块会在本方法返回 {@code true} 时
-     * 同步“无目标”状态，使客户端指针旋转。</p>
+     * <p>扫描事件在物品栏中没有罗盘或未发现候选方块时调用本方法，返回 {@code true} 时同步
+     * “无目标”状态，使客户端指针旋转。退出和重生事件也用它清理缓存，但不由本方法发送网络包。</p>
      *
      * @param playerId 玩家 UUID
      * @return 清除前是否存在目标

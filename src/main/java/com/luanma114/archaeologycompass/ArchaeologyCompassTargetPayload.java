@@ -13,8 +13,8 @@ import net.minecraft.world.level.Level;
 /**
  * 服务端发送给客户端的考古罗盘目标状态包。
  *
- * <p>服务端仅在目标发生变化时发送本包。{@code target == null} 表示范围内无目标，
- * 客户端收到后清除本地目标并让指针持续旋转。</p>
+ * <p>服务端在目标变化、清除旧目标或初始化扫描状态时发送本包。{@code target == null} 表示清除目标，
+ * 客户端收到后清空本地目标并标记已收到状态，让指针旋转、提示结束等待。</p>
  */
 public record ArchaeologyCompassTargetPayload(ExampleMod.Target target) implements CustomPacketPayload {
     /** 网络包唯一 ID：{@code archaeologycompass:target_state}。 */

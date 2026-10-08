@@ -22,7 +22,7 @@ public final class Config {
             .comment("Vertical scan radius in blocks.")
             .defineInRange("verticalRadius", 32, 1, 64);
 
-    /** 两次完整扫描之间的最小 Tick 间隔。20 Tick 通常约等于一秒。 */
+    /** 周期完整扫描的 Tick 间隔；登录、换维度和重生可额外立即扫描。默认 20 Tick，正常速率下约一秒。 */
     public static final ModConfigSpec.IntValue SCAN_INTERVAL_TICKS = BUILDER
             .comment("Ticks between full scans.")
             .defineInRange("scanIntervalTicks", 20, 1, 1200);

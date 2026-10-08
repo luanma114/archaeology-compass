@@ -26,6 +26,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  */
 @EventBusSubscriber(modid = ExampleMod.MOD_ID)
 public final class ArchaeologyCompassEvents {
+    /** 已初始化扫描状态的玩家；首次扫描无目标时也发送空目标包，供客户端结束等待提示。 */
     private static final Set<UUID> INITIALIZED_PLAYERS = new HashSet<>();
     /** 玩家物品栏中有罗盘时，按服务端配置周期更新目标。 */
     @SubscribeEvent
@@ -42,7 +43,8 @@ public final class ArchaeologyCompassEvents {
      * 根据玩家物品栏中是否拥有罗盘，立即建立或清除目标状态。
      *
      * <p>只要玩家物品栏（含主手、副手）中存在罗盘就持续扫描，罗盘不在手中时同样生效；
-     * 完全失去罗盘时才清除目标。供登录、换维度和周期 Tick 共用。</p>
+     * 不存在罗盘或没有扫描目标时清除旧目标。供登录、换维度、重生和周期 Tick 共用。
+     * 普通刷空、挖掘、超出范围或失去罗盘在下次周期更新时反映，不单独监听方块或物品栏变化。</p>
      */
     private static void updateOrClearTarget(ServerPlayer player) {
         if (player.getInventory().contains(stack -> stack.is(ExampleMod.ARCHAEOLOGY_COMPASS.get()))) {
@@ -60,7 +62,7 @@ public final class ArchaeologyCompassEvents {
     /**
      * 玩家登录后立即建立目标状态。
      *
-     * <p>不等待普通扫描周期，避免客户端登录或重新连接后最多等待一秒才看到正确罗盘状态。</p>
+     * <p>不等待普通扫描周期（默认 20 Tick），在玩家物品栏中有罗盘时立即扫描并初始化同步状态。</p>
      */
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
@@ -82,6 +84,7 @@ public final class ArchaeologyCompassEvents {
         }
     }
 
+    /** 重生时清理旧目标和初始化标记，再按重生后的物品栏状态重新扫描或清理。 */
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
@@ -123,8 +126,8 @@ public final class ArchaeologyCompassEvents {
     /**
      * 在玩家周围已加载区块的方块实体中选择最近有效考古目标。
      *
-     * <p>按区块半径遍历。{@link ServerLevel#getChunkSource()} 的 {@code getChunkNow} 不加载新区块；
-     * 因此罗盘不会因搜索扩大服务端内存、磁盘 I/O 或世界生成范围。</p>
+     * <p>一次调用内按区块半径遍历。{@link ServerLevel#getChunkSource()} 的 {@code getChunkNow} 不加载新区块；
+     * 搜索不会主动触发新区块加载或世界生成，但仍有方块实体遍历和战利品数据序列化开销。</p>
      */
     private static ExampleMod.Target findNearestTarget(ServerPlayer player) {
         ServerLevel level = player.serverLevel();

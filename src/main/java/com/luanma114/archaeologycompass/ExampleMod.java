@@ -37,7 +37,8 @@ public final class ExampleMod {
      * 可作为考古罗盘候选目标的方块标签。
      *
      * <p>定义文件位于 {@code data/archaeologycompass/tags/block/archaeology_targets.json}。
-     * 整合包或其他模组可扩展此标签，无需修改 Java 代码。</p>
+     * 整合包或其他模组可扩展此标签，但候选方块还须使用 {@code BrushableBlockEntity}，
+     * 且保存数据含考古战利品状态；仅加入标签不足以成为有效目标。</p>
      */
     public static final TagKey<Block> ARCHAEOLOGY_TARGETS = TagKey.create(
             Registries.BLOCK,
@@ -51,7 +52,7 @@ public final class ExampleMod {
      * 考古罗盘物品注册对象。
      *
      * <p>物品注册、服务端目标扫描、客户端指针渲染和目标同步已完成。
-     * 当前模型为含 32 帧 {@code minecraft:angle} override 的原版指南针外观，正式发布前可替换为保持相同指向逻辑的自制外观。</p>
+     * 当前使用原创 32×32 铜制罗盘贴图，主模型通过 {@code minecraft:angle} override 选择 32 个角度帧。</p>
      */
     public static final DeferredItem<Item> ARCHAEOLOGY_COMPASS = ITEMS.registerSimpleItem(
             "archaeology_compass",
@@ -88,7 +89,7 @@ public final class ExampleMod {
      * 表示一次扫描选出的目标位置。
      *
      * <p>维度与坐标必须同时保存，防止玩家换维度后将相同坐标误认为原目标。
-     * 服务端目标缓存保存此值，并在变化时同步到对应客户端；客户端模型模块后续读取该值计算指针角度。</p>
+     * 服务端目标缓存保存此值，并在变化或需要初始化时同步到对应客户端；客户端模型属性读取同步后的状态计算指针角度。</p>
      */
     public record Target(ResourceKey<Level> dimension, BlockPos position) {
     }
