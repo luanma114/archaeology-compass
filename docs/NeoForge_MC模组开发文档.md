@@ -1,8 +1,8 @@
 # NeoForge Minecraft 模组开发文档
 
-## 最新状态：0.1.2 预发布准备（2026-10-08 更新）
+## 最新状态：0.1.2 预发布（2026-10-08 更新）
 
-当前版本为 **`0.1.2`**，用户已批准发布 GitHub `v0.1.2` 预发布；本轮离线构建与资源校验已完成，GitHub 预发布正在准备；游戏内专项验收仍未完成。版本配置见 [gradle.properties](<../gradle.properties>)，项目说明见 [README](<../README.md>)。本节描述当前仓库的实现、V2 资源与发布边界；历史 `0.1.1` 验证和当前 `0.1.2` 待验项分别记录，不代表全部游戏功能已验收。下方 **2026-09-02 章节是历史快照**，其中原版占位外观等描述不代表当前版本。
+当前版本为 **`0.1.2` 预发布**，[GitHub v0.1.2](<https://github.com/luanma114/archaeology-compass/releases/tag/v0.1.2>) 已发布，JAR 与 V2 图标已上传并核对大小及校验值。本轮离线构建与资源校验已完成，游戏内专项验收仍未完成。版本配置见 [gradle.properties](<../gradle.properties>)，项目说明见 [README](<../README.md>)。本节描述当前仓库的实现、V2 资源与发布边界；历史 `0.1.1` 验证和当前 `0.1.2` 待验项分别记录，不代表全部游戏功能已验收。下方 **2026-09-02 章节是历史快照**，其中原版占位外观等描述不代表当前版本。
 
 ### 开发、构建与 CI
 
@@ -86,7 +86,7 @@ py -3 generate_compass_assets.py
 
 整合包可在遵守许可条件的前提下收录和分发模组。[build.gradle](<../build.gradle>) 的 JAR 任务打包 [LICENSE](<../LICENSE>)、[LICENSE_ASSETS](<../LICENSE_ASSETS>) 和 [TEMPLATE_LICENSE.txt](<../TEMPLATE_LICENSE.txt>)；[模组元数据](<../src/main/resources/META-INF/neoforge.mods.toml>) 从 [gradle.properties](<../gradle.properties>) 展开 `MIT AND CC-BY-4.0`。
 
-既有 `v0.1.0` 和 `v0.1.1` 的标签、Release 与附件保持不变，其中 `v0.1.0` 旧附件仍含 `All Rights Reserved` 元数据及较早功能外观。当前 `0.1.2` 沿用分内容许可声明，采用 V2 铜壳及同步的 [400×400 V2 图标](<archaeology_compass_icon_400.png>)；发行包已完成离线构建和资源校验，GitHub 预发布正在准备。不能把旧附件描述为本次构建，也不覆盖旧附件。
+既有 `v0.1.0` 和 `v0.1.1` 的标签、Release 与附件保持不变，其中 `v0.1.0` 旧附件仍含 `All Rights Reserved` 元数据及较早功能外观。当前 `0.1.2` 沿用分内容许可声明，采用 V2 铜壳及同步的 [400×400 V2 图标](<archaeology_compass_icon_400.png>)；发行包已完成离线构建和资源校验，[GitHub v0.1.2 预发布](<https://github.com/luanma114/archaeology-compass/releases/tag/v0.1.2>) 已上传并核验 JAR 与图标附件。不能把旧附件描述为本次构建，也不覆盖旧附件。
 
 ## 考古罗盘：历史实现快照（2026-09-02，非当前状态）
 
