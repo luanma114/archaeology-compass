@@ -15,7 +15,7 @@
 | Source | https://github.com/luanma114/archaeology-compass |
 | Issues | https://github.com/luanma114/archaeology-compass/issues |
 | Project license | 优先使用 Custom License，粘贴第 5 节的分内容许可说明；不是将全部内容仅标为 MIT |
-| Project avatar | 准备 400×400 PNG，使用原创铜制罗盘主体，确保缩小后也清晰 |
+| Project avatar | 已准备 [400×400 PNG 图标](<archaeology_compass_icon_400.png>)，基于原创铜制罗盘，深色背景，无文字 |
 
 项目名称是否已被占用、分类选项是否存在，仍需在 CurseForge 后台确认。名称不附加 Minecraft 版本、NeoForge 或 Beta 字样；版本信息放在文件标签和描述里。
 
@@ -181,7 +181,7 @@ The licenses apply by content, not as alternative licenses for all files. Retain
 
 ## 6. 图片标题与说明（作者准备图片后使用）
 
-本稿不包含新制作的图标或游戏截图，不使用假截图、不预填不存在的图片 URL。将图片上传到 CurseForge 后，通过页面编辑器插入图片。截图应来自准备发布的版本。
+已准备 [400×400 项目图标](<archaeology_compass_icon_400.png>)，本稿不包含真实游戏截图，不使用假截图、不预填不存在的图片 URL。将图标上传至项目头像字段；其他图片上传到 CurseForge 后，通过页面编辑器插入。游戏截图应来自准备发布的版本。
 
 | 素材 | 英文标题 | 英文说明 |
 | --- | --- | --- |
@@ -190,7 +190,7 @@ The licenses apply by content, not as alternative licenses for all files. Retain
 | 真实 Shift 提示截图 | Search details at a glance | Hold Shift over the item to view scan rules, the server's range, and the current search status. |
 | 可选美术旋转预览 | Copper compass artwork preview | Artwork animation preview, not an in-game capture. Preview speed does not represent the in-game needle speed. |
 
-可选美术素材已有 [旋转预览](<archaeology_compass_rotation.gif>) 和 [32 帧总览](<archaeology_compass_preview.png>)。不要将它们称为游戏截图。项目头像可以基于原创罗盘制作，但本稿未生成 400×400 图标。
+可选美术素材已有 [旋转预览](<archaeology_compass_rotation.gif>) 和 [32 帧总览](<archaeology_compass_preview.png>)，不要将它们称为游戏截图。[项目图标](<archaeology_compass_icon_400.png>) 使用原创罗盘第 19 帧整数倍放大，配深色背景、测量环和铜色角标；可通过 [图标生成脚本](<../generate_project_icon.py>) 重现（Python 3 + Pillow）。图标沿用 [美术许可](<../LICENSE_ASSETS>) 的 CC BY 4.0 授权。
 
 ## 7. 发布前核对（内部清单，不粘贴到公开正文）
 

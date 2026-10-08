@@ -9,6 +9,11 @@ The following artwork is licensed under the Creative Commons Attribution
 - src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_*.png
 - docs/archaeology_compass_preview.png
 - docs/archaeology_compass_rotation.gif
+- docs/archaeology_compass_icon_400.png
+
+The project icon adapts compass frame 19 with integer pixel scaling and a
+new dark survey-style background, copper corner marks, and a drop shadow.
+It is promotional artwork, not an in-game screenshot.
 
 In a built mod JAR, the corresponding artwork is located at:
 - assets/archaeologycompass/textures/item/archaeology_compass_*.png
