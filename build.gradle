@@ -149,6 +149,10 @@ tasks.withType(ProcessResources).configureEach {
     }
 }
 
+tasks.named('jar', Jar).configure {
+    from('LICENSE', 'LICENSE_ASSETS', 'TEMPLATE_LICENSE.txt')
+}
+
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {
     publications {

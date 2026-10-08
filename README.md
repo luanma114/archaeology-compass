@@ -65,4 +65,16 @@ gradlew.bat build
 
 ## 许可
 
-许可证待定。发布前请在 `LICENSE` 中明确许可证文本。
+本项目按内容分别授权，并非所有文件都同时适用两种许可证：
+
+- **代码与非美术文件：MIT**。包括 Java 源码、`generate_compass_assets.py`、模型 JSON、配置和项目文档，详见 [LICENSE](LICENSE)。允许使用、修改、分发和商业使用，须保留版权与许可声明。
+- **美术资源：CC BY 4.0**。包括 `src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_*.png`、上方 PNG 全帧预览和 GIF 旋转预览，详见 [LICENSE_ASSETS](LICENSE_ASSETS) 与 [完整许可条款](https://creativecommons.org/licenses/by/4.0/legalcode.en)。允许分享、修改和商业使用，须适当署名、保留许可链接并说明修改。
+- **NeoForged MDK 模板**保留原有 MIT 版权和许可声明，见 [TEMPLATE_LICENSE.txt](TEMPLATE_LICENSE.txt)。第三方材料和 Minecraft 资源不属于本项目授权范围。
+
+美术署名示例：
+
+> Archaeology Compass artwork by luanma114, licensed under CC BY 4.0. [Source](https://github.com/luanma114/archaeology-compass) · [License](https://creativecommons.org/licenses/by/4.0/)。如有修改，请补充修改说明。
+
+整合包可以在遵守上述许可条件的前提下收录和分发模组。生成脚本采用 MIT，不会改变本仓库已生成美术资源的 CC BY 4.0 授权。
+
+后续构建的 JAR 会包含代码、美术和模板许可文件。已发布的 `v0.1.0` 标签、Release 和 JAR 附件保持不变；该旧附件仍含原先的 `All Rights Reserved` 元数据，不应将其描述为已更新许可的构建。本次许可声明适用于当前仓库及后续构建。

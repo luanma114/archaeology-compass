@@ -1,0 +1,45 @@
+Archaeology Compass artwork license
+SPDX-License-Identifier: CC-BY-4.0
+
+Copyright (c) 2026 luanma114
+
+The following artwork is licensed under the Creative Commons Attribution
+4.0 International Public License (CC BY 4.0):
+
+- src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_*.png
+- docs/archaeology_compass_preview.png
+- docs/archaeology_compass_rotation.gif
+
+In a built mod JAR, the corresponding artwork is located at:
+- assets/archaeologycompass/textures/item/archaeology_compass_*.png
+
+Creator and attribution name: luanma114
+Work title: Archaeology Compass artwork
+Source: https://github.com/luanma114/archaeology-compass
+License: https://creativecommons.org/licenses/by/4.0/
+Full legal code: https://creativecommons.org/licenses/by/4.0/legalcode.en
+Plain-text legal code: https://creativecommons.org/licenses/by/4.0/legalcode.txt
+
+This notice applies CC BY 4.0 to the listed artwork; the linked legal code
+contains the governing license terms. It is not a replacement for those terms.
+
+You may share and adapt this artwork, including for commercial purposes,
+subject to CC BY 4.0. When sharing, provide appropriate credit, retain supplied
+notices, link to the license and source where reasonably practicable, and
+indicate modifications. Do not imply endorsement by the creator. Do not impose
+additional legal or technological restrictions that prevent recipients from
+exercising the licensed rights.
+
+Suggested attribution:
+"Archaeology Compass artwork by luanma114, licensed under CC BY 4.0.
+Source: https://github.com/luanma114/archaeology-compass
+License: https://creativecommons.org/licenses/by/4.0/"
+Add a description of changes when distributing modified artwork.
+
+The artwork is provided as-is, without warranties, to the extent permitted by
+law. Only rights that the licensor has authority to license are granted.
+Third-party materials, trademarks and Minecraft assets are not covered.
+
+The generator script generate_compass_assets.py and item model JSON files are
+licensed under MIT, not CC BY 4.0. The generator's MIT license does not change
+the CC BY 4.0 license of the artwork listed above.
