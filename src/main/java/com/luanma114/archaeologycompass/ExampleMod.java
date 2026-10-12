@@ -36,7 +36,7 @@ public final class ExampleMod {
      * 考古罗盘物品注册对象。
      *
      * <p>物品注册、服务端目标扫描、客户端指针渲染和目标同步已完成。
-     * 当前使用原创 32×32 铜制罗盘贴图，主模型通过 {@code minecraft:angle} override 选择 32 个角度帧。</p>
+     * 当前使用原创 16×16 铜制罗盘贴图，主模型通过 {@code minecraft:angle} override 选择 32 个角度帧。</p>
      */
     public static final DeferredItem<Item> ARCHAEOLOGY_COMPASS = ITEMS.registerSimpleItem(
             "archaeology_compass",

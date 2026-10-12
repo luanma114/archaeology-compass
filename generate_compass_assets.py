@@ -1,75 +1,105 @@
+"""Generate the archaeology compass sprites, the per-frame models and the previews.
+
+Authored at **16x16** so the compass shares the pixel density of the vanilla
+compass and of other modded compasses. A 32x32 sprite reads as a different
+fidelity class next to them, and gets crushed when the GUI draws it at
+16 px; at 16x16 the needle survives at every GUI scale.
+
+What a 16 px budget buys:
+  * kept   - copper shell with a lit and a shaded half, dark teal dial,
+             pale-gold needle with a teal tail
+  * dropped- the two-row side wall becomes one, and the dial ticks and
+             patina dots are gone (at 16 px they were sub-pixel noise)
+"""
+
 from pathlib import Path
 import math
 import json
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageChops, ImageDraw
 
 
 ROOT = Path(__file__).resolve().parent
 ASSETS = ROOT / "src/main/resources/assets/archaeologycompass"
 TEXTURES = ASSETS / "textures/item"
 MODELS = ASSETS / "models/item"
-SIZE = 32
-CENTER = (15.5, 14.5)
-PERSPECTIVE = 0.64
+SIZE = 16
+CENTER = (7.5, 6.5)
+PERSPECTIVE = 0.62
+SHELL_DEPTH = 2
+TOP_FACE = (0, 2, 15, 12)
 PALETTE = {
-    "outline": "#352821",
-    "copper_light": "#F2BB7A",
-    "copper": "#C7814D",
-    "copper_shadow": "#865035",
-    "patina": "#548778",
-    "dial": "#343C39",
-    "dial_shadow": "#252D2C",
-    "tick": "#A9946A",
-    "needle": "#F6E5B0",
-    "needle_shadow": "#C8AD73",
-    "tail": "#68AD9A",
+    "outline": "#2A1F19",
+    "copper": "#C07C49",
+    "ring_light": "#F5C88C",
+    "ring_dark": "#6B3F24",
+    "dial": "#1E2A27",
+    "dial_shadow": "#141C1A",
+    "bevel_light": "#A66B42",
+    "bevel_dark": "#6B4327",
+    "needle": "#FFF3C8",
+    "needle_shadow": "#D6B477",
+    "tail": "#5FC2A8",
 }
+
+
+def top_face_mask():
+    """The upper ellipse, used to find where the shell starts in each column."""
+    mask = Image.new("L", (SIZE, SIZE))
+    ImageDraw.Draw(mask).ellipse(TOP_FACE, fill=255)
+    return mask
+
+
+def shape_mask():
+    """Silhouette of the whole body: top face plus the side-wall rows."""
+    mask = Image.new("L", (SIZE, SIZE))
+    draw = ImageDraw.Draw(mask)
+    for offset in range(SHELL_DEPTH):
+        draw.ellipse((TOP_FACE[0], TOP_FACE[1] + offset,
+                      TOP_FACE[2], TOP_FACE[3] + offset), fill=255)
+    return mask
 
 
 def base_image():
     image = Image.new("RGBA", (SIZE, SIZE))
     draw = ImageDraw.Draw(image)
-    top = (1, 4, 30, 24)
-    mask = Image.new("L", image.size)
-    ImageDraw.Draw(mask).ellipse(top, fill=255)
-    # V2: two copper side-wall rows plus one dark bottom edge.
-    for offset in range(3, -1, -1):
-        draw.ellipse((1, 4 + offset, 30, 24 + offset), fill=PALETTE["outline"])
-    for x in range(2, 30):
-        bottom = max(y for y in range(SIZE) if mask.getpixel((x, y)))
-        shades = (("#D39860", "#C68B56") if x < 11 else
-                  ("#B77B4C", "#AA7044") if x < 21 else
-                  ("#93603D", "#875636"))
-        for depth, color in enumerate(shades, start=1):
-            draw.point((x, bottom + depth), fill=color)
-    draw.ellipse(top, fill=PALETTE["outline"])
-    draw.ellipse((2, 5, 29, 23), fill=PALETTE["copper"])
-    draw.arc((2, 5, 29, 23), 185, 310, fill=PALETTE["copper_light"], width=2)
-    draw.arc((2, 5, 29, 23), 10, 160, fill="#A66D43")
-    # A copper bevel joins the top face to the shell without a heavy black seam.
-    for x in range(2, 30):
-        bottom = max(y for y in range(SIZE) if mask.getpixel((x, y)))
-        if bottom >= 17:
-            color = "#BC8453" if x < 11 else "#A36B42" if x < 21 else "#7E5033"
-            draw.point((x, bottom), fill=color)
-    draw.ellipse((4, 6, 27, 22), fill=PALETTE["outline"])
-    draw.ellipse((5, 7, 26, 21), fill=PALETTE["dial_shadow"])
-    draw.ellipse((6, 8, 25, 21), fill=PALETTE["dial"])
-    for index in range(8):
-        angle = index * math.tau / 8
-        outer = (round(CENTER[0] + math.sin(angle) * 10),
-                 round(CENTER[1] - math.cos(angle) * 10 * PERSPECTIVE))
-        inner = (round(CENTER[0] + math.sin(angle) * 8.5),
-                 round(CENTER[1] - math.cos(angle) * 8.5 * PERSPECTIVE))
-        draw.line((inner, outer), fill=PALETTE["tick"])
-    for point in ((4, 18), (5, 19), (25, 19), (26, 18)):
-        draw.point(point, fill=PALETTE["patina"])
+    top = top_face_mask()
+
+    for offset in range(SHELL_DEPTH - 1, -1, -1):
+        draw.ellipse((TOP_FACE[0], TOP_FACE[1] + offset,
+                      TOP_FACE[2], TOP_FACE[3] + offset), fill=PALETTE["outline"])
+    # One copper side-wall row plus a dark bottom edge: all 16 px can afford.
+    for x in range(1, 15):
+        column = [y for y in range(SIZE) if top.getpixel((x, y))]
+        if not column:
+            continue
+        bottom = max(column)
+        shade = "#D39860" if x < 6 else "#B77B4C" if x < 11 else "#875636"
+        draw.point((x, bottom + 1), fill=shade)
+
+    draw.ellipse(TOP_FACE, fill=PALETTE["outline"])
+    draw.ellipse((1, 3, 14, 11), fill=PALETTE["copper"])
+    draw.arc((1, 3, 14, 11), 185, 305, fill=PALETTE["ring_light"])
+    draw.arc((1, 3, 14, 11), 15, 155, fill=PALETTE["ring_dark"])
+
+    # Bevel joins the top face to the shell without a heavy black seam.
+    for x in range(1, 15):
+        column = [y for y in range(SIZE) if top.getpixel((x, y))]
+        if not column:
+            continue
+        bottom = max(column)
+        if bottom >= 9:
+            draw.point((x, bottom),
+                       fill=PALETTE["bevel_light"] if x < 8 else PALETTE["bevel_dark"])
+
+    draw.ellipse((2, 4, 13, 10), fill=PALETTE["outline"])
+    draw.ellipse((3, 5, 12, 10), fill=PALETTE["dial_shadow"])
+    draw.ellipse((3, 5, 12, 9), fill=PALETTE["dial"])
     return image
 
 
-def frame_image(index):
-    image = base_image()
+def frame_image(index, body, mask):
+    image = body.copy()
     angle = index * math.tau / 32
     direction = (-math.sin(angle), math.cos(angle))
     perpendicular = (-direction[1], direction[0])
@@ -81,28 +111,29 @@ def frame_image(index):
             dy = (y - CENTER[1]) / PERSPECTIVE
             along = dx * direction[0] + dy * direction[1]
             across = dx * perpendicular[0] + dy * perpendicular[1]
-            if 0 <= along <= 9.0 and abs(across) <= max(0.5, 2.5 * (1 - along / 9.7)):
+            if 0 <= along <= 4.6 and abs(across) <= max(0.45, 1.3 * (1 - along / 5.0)):
                 front.append((x, y, across))
-            elif -6.8 <= along < 0 and abs(across) <= max(0.45, 1.8 * (1 + along / 7.5)):
+            elif -3.4 <= along < 0 and abs(across) <= max(0.4, 0.95 * (1 + along / 3.9)):
                 back.append((x, y))
+
     draw = ImageDraw.Draw(image)
-    needle_pixels = {(x, y) for x, y, _ in front} | set(back)
-    for x, y in needle_pixels:
-        for offset_x, offset_y in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-            if (x + offset_x, y + offset_y) not in needle_pixels:
-                draw.point((x + offset_x, y + offset_y), fill=PALETTE["dial_shadow"])
     for x, y in back:
         draw.point((x, y), fill=PALETTE["tail"])
     for x, y, across in front:
         draw.point((x, y), fill=PALETTE["needle"] if across <= 0 else PALETTE["needle_shadow"])
-    draw.rectangle((14, 14, 17, 15), fill=PALETTE["outline"])
-    draw.line((15, 14, 16, 14), fill=PALETTE["copper_light"])
+    draw.point((7, 6), fill=PALETTE["outline"])
+    draw.point((8, 6), fill=PALETTE["ring_light"])
+
+    # Clip to the silhouette so the shell keeps its rounded outline.
+    image.putalpha(ImageChops.multiply(image.getchannel("A"), mask))
     return image
 
 
 def main():
     TEXTURES.mkdir(parents=True, exist_ok=True)
-    frames = [frame_image(index) for index in range(32)]
+    body = base_image()
+    mask = shape_mask()
+    frames = [frame_image(index, body, mask) for index in range(32)]
     for index, image in enumerate(frames):
         name = f"archaeology_compass_{index:02d}"
         image.save(TEXTURES / f"{name}.png", optimize=True)
@@ -112,14 +143,15 @@ def main():
         }
         (MODELS / f"{name}.json").write_text(json.dumps(model, indent=2) + "\n", encoding="utf-8")
 
-    preview = Image.new("RGB", (8 * 144, 4 * 160), "#202725")
+    scale = 8
+    preview = Image.new("RGB", (8 * (SIZE * scale + 16), 4 * (SIZE * scale + 32)), "#202725")
     draw = ImageDraw.Draw(preview)
     for index, image in enumerate(frames):
-        x = (index % 8) * 144 + 8
-        y = (index // 8) * 160 + 8
-        scaled = image.resize((128, 128), Image.Resampling.NEAREST)
+        x = (index % 8) * (SIZE * scale + 16) + 8
+        y = (index // 8) * (SIZE * scale + 32) + 8
+        scaled = image.resize((SIZE * scale, SIZE * scale), Image.Resampling.NEAREST)
         preview.paste(scaled, (x, y), scaled)
-        draw.text((x + 54, y + 136), f"{index:02d}", fill="#E8DABD")
+        draw.text((x + SIZE * scale // 2 - 6, y + SIZE * scale + 6), f"{index:02d}", fill="#E8DABD")
     preview.save(ROOT / "docs/archaeology_compass_preview.png")
 
     animation = []
@@ -137,7 +169,7 @@ def main():
         disposal=2,
     )
     assert len({image.tobytes() for image in frames}) == 32
-    print("Generated 32 distinct RGBA textures, 32 models, contact sheet and rotation preview.")
+    print(f"Generated 32 distinct {SIZE}x{SIZE} RGBA textures, 32 models, contact sheet and rotation preview.")
 
 
 if __name__ == "__main__":

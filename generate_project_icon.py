@@ -99,8 +99,10 @@ def main():
 
     icon = backdrop.resize((SIZE, SIZE), Image.Resampling.NEAREST).convert("RGBA")
     # Integer scaling preserves the exact colors and shapes of the game art.
+    # The sprite is now 16x16, so 20x restores the on-canvas size that the
+    # former 32x32 source gave at 10x.
     sprite = load_sprite()
-    sprite = sprite.resize((sprite.width * 10, sprite.height * 10), Image.Resampling.NEAREST)
+    sprite = sprite.resize((sprite.width * 20, sprite.height * 20), Image.Resampling.NEAREST)
     x = (SIZE - sprite.width) // 2
     y = (SIZE - sprite.height) // 2 - 4
 
