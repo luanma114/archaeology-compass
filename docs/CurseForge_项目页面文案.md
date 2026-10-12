@@ -89,9 +89,9 @@ The server controls these settings, including the integrated server in single-pl
 
 ## Prerelease status and limitations
 
-**Version 0.1.3 is an early prerelease.** Target detection no longer depends on a block tag: any block whose block entity is a Minecraft `BrushableBlockEntity` or a subclass, and which still holds archaeology loot, is found — so custom archaeology blocks added by modpacks work without any data pack. Crafting, needle behaviour, the Shift tooltip and the V2 artwork were validated in a development client on a newly created world.
+**Version 0.1.3 is an early prerelease.** Target detection no longer depends on a block tag: any block whose block entity is a Minecraft `BrushableBlockEntity` or a subclass, and which still holds archaeology loot, is found — so custom archaeology blocks added by modpacks work without any data pack. Crafting, needle behaviour, the Shift tooltip and the V2 artwork were validated in a development client on a newly created world. The release JAR was also installed into an All the Mods 10 instance, where the compass located naturally generated Allthemodium archaeology blocks in an Ancient City.
 
-The following have **not** been verified for this release, and no claim is made about them: installation from the release JAR in a clean instance, dedicated-server multiplayer, JEI display, and performance under large scan ranges or high player counts. Expect possible issues and please report them.
+The following have **not** been verified for this release, and no claim is made about them: installation into a clean instance with no other content mods, dedicated-server multiplayer, JEI display, and performance under large scan ranges or high player counts. Expect possible issues and please report them.
 
 - Only loaded chunks within the configured range are searched.
 - Block changes and ordinary inventory changes are reflected on the next scan, not instantly.
@@ -134,7 +134,9 @@ Found a problem? Please [open an issue](https://github.com/luanma114/archaeology
 
 当前 **0.1.3 为兼容性更新预发布**。目标判定不再依赖方块标签：只要方块实体是原版刷扫方块 `BrushableBlockEntity` 或其子类，且仍有战利品，就会被找到——整合包的自定义考古方块因此开箱即用，不再需要数据包。已在新建存档的开发客户端中确认合成、指针指向附近目标、Shift 提示（含「已发现考古目标」状态）以及 V2 游戏内外观。
 
-以下项目**本次未做验证，页面不作任何相关声明**：发布 JAR 在干净实例中的安装、独立服务器多人联机、JEI 展示，以及大范围扫描与多人场景下的性能。JEI 不是必需依赖。
+**另已在 All the Mods 10 实例中确认**：发布 JAR 装入后，罗盘在远古城市定位到自然生成的 Allthemodium 考古方块。
+
+以下项目**本次未做验证，页面不作任何相关声明**：在无其他内容模组的干净实例中的安装、独立服务器多人联机、JEI 展示，以及大范围扫描与多人场景下的性能。JEI 不是必需依赖。
 
 代码及非美术内容采用 MIT，指定美术资源采用 CC BY 4.0；两者按内容分别适用。整合包可以在遵守相应许可条款的前提下收录。问题反馈请提交 [Issue](https://github.com/luanma114/archaeology-compass/issues)。
 
