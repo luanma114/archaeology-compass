@@ -158,20 +158,36 @@ Found a problem? Please [open an issue](https://github.com/luanma114/archaeology
 
 ### English changelog for 0.1.4（可直接粘贴到 Changelog）
 
+> CurseForge 上当前提交的版本是 `0.1.2`，因此这份更新日志覆盖 **0.1.2 → 0.1.4** 两个版本的全部改动。
+
 # Archaeology Compass 0.1.4
 
 Early prerelease for **Minecraft 1.21.1 / NeoForge**.
 
-## Changes since 0.1.3
+## Changes since 0.1.2
 
-- Redrew the item sprite at **16×16**. The compass now shares the pixel density of the vanilla compass and of other modded compasses, so it reads clearly at every GUI scale. The previous 32×32 sprite was crushed to 16 px whenever the GUI draws it at scale 1, losing the needle.
-- The 16 px budget keeps the two-tone copper shell, the dark teal dial, and the pale-gold needle with its teal tail. The second side-wall row, the dial ticks and the patina dots are gone — at 16 px they were sub-pixel noise.
-- The 400×400 project icon was regenerated from the new sprite.
-- Target scanning, needle behaviour, networking, crafting, and configuration values are unchanged from 0.1.3.
+### Custom archaeology blocks now work out of the box
+
+- Target detection no longer uses a block tag. Any block whose block entity is a Minecraft `BrushableBlockEntity` or a subclass, and whose saved data still contains `LootTable` or `item`, is treated as a target.
+- Modpacks no longer need a data pack to register their own archaeology blocks. Allthemodium's `suspicious_clay` and `suspicious_soul_sand`, which All the Mods 10 places in Ancient Cities, are now found with no extra configuration.
+- Removed the `archaeologycompass:archaeology_targets` block tag and the matching `ARCHAEOLOGY_TARGETS` field.
+- Vanilla behaviour is unchanged: the only two blocks in the game that use the brushing mechanic are suspicious sand and suspicious gravel, and both were already covered.
+
+### Compass artwork redrawn at 16×16
+
+- The item sprite is drawn at 16×16, the same pixel density as the vanilla compass and as other modded compasses. The previous 32×32 sprite was crushed to 16 px whenever the GUI drew it at scale 1, which lost the needle and made the item look like it came from a different art set.
+- The 16 px budget keeps the two-tone copper shell, the dark teal dial, and the pale-gold needle with its teal tail. The second side-wall row, the eight dial ticks and the patina dots are gone — at 16 px they were sub-pixel noise.
+- The 400×400 project icon and the in-game mod list logo were regenerated from the new sprite.
+
+### Unchanged
+
+Target scanning rules, search radius, needle behaviour, networking, the crafting recipe, and server configuration values are unchanged from 0.1.2.
 
 ## Validation notice
 
-This is not a stable-release claim. Crafting, needle behaviour, the Shift tooltip, and the artwork were validated in a development client on a newly created world. Installation from the release JAR in a clean instance, dedicated-server multiplayer, JEI display, and performance under large scan ranges or high player counts have not been verified, and no claims are made about them.
+This is not a stable-release claim. Crafting, needle behaviour, the Shift tooltip and the artwork were validated in a development client on a newly created world. The release JAR was also installed into an All the Mods 10 instance (520 mods), where the compass located naturally generated Allthemodium archaeology blocks in an Ancient City.
+
+Installation into a clean instance with no other content mods, dedicated-server multiplayer, JEI display, and performance under large scan ranges or high player counts have not been verified, and no claims are made about them.
 
 ## 5. Custom License 字段文案（可复制）
 
