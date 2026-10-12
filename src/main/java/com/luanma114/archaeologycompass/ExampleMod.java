@@ -1,15 +1,11 @@
 package com.luanma114.archaeologycompass;
 
-// Minecraft：坐标、注册表、资源 ID、标签、物品、维度和方块类型。
+// Minecraft：坐标、维度键、物品和创造模式标签页。
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 // 客户端专属初始化：仅在 Dist.CLIENT 分支引用，避免独立服务端加载客户端类。
 import com.luanma114.archaeologycompass.client.ArchaeologyCompassClient;
 // NeoForge：模组入口、生命周期事件、配置和安全的延迟注册。
@@ -32,18 +28,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class ExampleMod {
     /** 模组唯一命名空间。资源目录、标签、注册 ID 和元数据必须使用相同值。 */
     public static final String MOD_ID = "archaeologycompass";
-
-    /**
-     * 可作为考古罗盘候选目标的方块标签。
-     *
-     * <p>定义文件位于 {@code data/archaeologycompass/tags/block/archaeology_targets.json}。
-     * 整合包或其他模组可扩展此标签，但候选方块还须使用 {@code BrushableBlockEntity}，
-     * 且保存数据含考古战利品状态；仅加入标签不足以成为有效目标。</p>
-     */
-    public static final TagKey<Block> ARCHAEOLOGY_TARGETS = TagKey.create(
-            Registries.BLOCK,
-            ResourceLocation.fromNamespaceAndPath(MOD_ID, "archaeology_targets")
-    );
 
     /** 此模组物品的延迟注册器。必须在构造函数中绑定到 Mod Event Bus。 */
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);

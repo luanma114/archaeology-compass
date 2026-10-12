@@ -173,18 +173,18 @@ public final class ArchaeologyCompassEvents {
     }
 
     /**
-     * 判断候选方块是否仍可考古。
+     * 判断候选方块是否仍有考古战利品。
+     *
+     * <p>判定只看方块实体类型与战利品状态，不依赖任何方块标签。任何使用原版刷扫机制的方块
+     * （{@link BrushableBlockEntity} 及其子类）都算目标，因此整合包和第三方模组添加的自定义
+     * 考古方块无需数据包或配置适配即可被识别。原版可疑沙子和可疑沙砾本身也是这一机制的实例。</p>
      *
      * <p>原版 {@link BrushableBlockEntity} 的 NBT 键为 {@code LootTable}（首字母大写）与 {@code item}。
      * 未刷扫时含 {@code LootTable}，首次刷扫后替换为 {@code item}，物品完全刷出后二者都消失。
      * 因此任一键存在都有效；都不存在时方块已刷空，不再定位。</p>
-     *
-     * <p>第三方方块必须同时加入目标标签且使用原版 {@link BrushableBlockEntity}。这避免将仅名称相似、
-     * 却没有考古状态的方块误判为目标。</p>
      */
     private static boolean isValidArchaeologyTarget(ServerLevel level, BlockEntity blockEntity) {
-        if (!level.getBlockState(blockEntity.getBlockPos()).is(ExampleMod.ARCHAEOLOGY_TARGETS)
-                || !(blockEntity instanceof BrushableBlockEntity brushable)) {
+        if (!(blockEntity instanceof BrushableBlockEntity brushable)) {
             return false;
         }
 
