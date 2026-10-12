@@ -1,8 +1,8 @@
 # NeoForge Minecraft 模组开发文档
 
-## 最新状态：0.1.2 预发布（2026-10-08 更新）
+## 最新状态：0.1.4 预发布（2026-10-12 更新）
 
-当前版本为 **`0.1.2` 预发布**，[GitHub v0.1.2](<https://github.com/luanma114/archaeology-compass/releases/tag/v0.1.2>) 已发布，JAR 与 V2 图标已上传并核对大小及校验值。本轮离线构建与资源校验已完成，游戏内专项验收仍未完成。版本配置见 [gradle.properties](<../gradle.properties>)，项目说明见 [README](<../README.md>)。本节描述当前仓库的实现、V2 资源与发布边界；历史 `0.1.1` 验证和当前 `0.1.2` 待验项分别记录，不代表全部游戏功能已验收。下方 **2026-09-02 章节是历史快照**，其中原版占位外观等描述不代表当前版本。
+当前版本为 **`0.1.4` 预发布**，[GitHub v0.1.4](<https://github.com/luanma114/archaeology-compass/releases/tag/v0.1.4>) 已发布。近期两项改动：`0.1.3` 移除目标方块标签白名单，改按「方块实体是 `BrushableBlockEntity` 或其子类 + 仍有战利品」判定；`0.1.4` 将物品贴图由 32×32 改为 **16×16**，与所有主流指南针模组和原版保持同一像素密度。版本配置见 [gradle.properties](<../gradle.properties>)，项目说明见 [README](<../README.md>)。本节描述当前仓库的实现；历史 `0.1.1`/`0.1.2` 验证记录与当前待验项分别记录，不代表全部游戏功能已验收。下方 **2026-09-02 章节是历史快照**，其中原版占位外观等描述不代表当前版本。
 
 ### 开发、构建与 CI
 
@@ -14,7 +14,7 @@ gradlew.bat runServer
 gradlew.bat build
 ```
 
-构建产物位于 `build/libs/`。[build.gradle](<../build.gradle>) 使用 `archivesName = mod_id` 与 `version = mod_version`，当前主 JAR 为 [archaeologycompass-0.1.2.jar](<../build/libs/archaeologycompass-0.1.2.jar>)（已完成本轮构建和资源检查），文件名不含 Minecraft 版本；发布时带上 Minecraft 版本是命名建议，不是现有构建规则。后续 Minecraft 版本须独立构建、测试和发布，不使用同一个 JAR 跨版本运行。
+构建产物位于 `build/libs/`。[build.gradle](<../build.gradle>) 使用 `archivesName = mod_id` 与 `version = mod_version`，当前主 JAR 为 [archaeologycompass-0.1.4.jar](<../build/libs/archaeologycompass-0.1.4.jar>)，文件名不含 Minecraft 版本；发布时带上 Minecraft 版本是命名建议，不是现有构建规则。后续 Minecraft 版本须独立构建、测试和发布，不使用同一个 JAR 跨版本运行。
 
 [CI 构建配置](<../.github/workflows/build.yml>) 在 push 和 pull request 时执行 `./gradlew build`，没有自动创建 Release 或上传发布附件的步骤；不能将触发 CI 等同于完成发布。
 
@@ -36,14 +36,16 @@ JEI 使用标准工作台分类自动识别原版有序配方，不需要专用�
 
 ### 美术资源与生成
 
-当前美术为原创 32×32 铜制罗盘，包含 32 个角度帧，已采用 **V2 折中铜壳**：表盘相对旧薄壳上移 1 像素，前侧为 2 行铜壳及 1 行暗色收边，减弱黑色分界和横向色带，保留左亮右暗的金属层次。[资源生成脚本](<../generate_compass_assets.py>) 已同步该设计，指针纵向透视比例仍为 `0.64`；方向帧顺序、模型谓词和 Java 指针逻辑不变。这里增强的是贴图的厚度感，不是增加模型几何厚度。
+当前美术为原创 **16×16** 铜制罗盘，包含 32 个角度帧。`0.1.4` 起贴图按 16×16 原生绘制，与[原版指南针](<https://minecraft.wiki/w/Compass>)以及 Deeper Darker、Explorer's Compass、Nature's Compass 等其他模组指南针的像素密度一致——32×32 在 GUI 缩放 1 下会被压到 16 像素显示，细节全部丢失，且与相邻物品不属于同一保真度层级。
+
+16 像素预算下保留铜壳的亮暗两半、暗青表盘、浅金指针与青色短尾；放弃两行侧壁（减为一行）、8 个刻度和氧化铜装饰点（在 16 像素下是亚像素噪点）。[资源生成脚本](<../generate_compass_assets.py>) 已同步该设计，指针纵向透视比例由 `0.64` 调整为 `0.62`；方向帧顺序、模型谓词和 Java 指针逻辑不变。
 
 - 贴图：[archaeology_compass_00.png](<../src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_00.png>) 至 [archaeology_compass_31.png](<../src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_31.png>)，均位于 `src/main/resources/assets/archaeologycompass/textures/item/`。
 - 帧模型：[archaeology_compass_00.json](<../src/main/resources/assets/archaeologycompass/models/item/archaeology_compass_00.json>) 至 [archaeology_compass_31.json](<../src/main/resources/assets/archaeologycompass/models/item/archaeology_compass_31.json>)，均位于 `src/main/resources/assets/archaeologycompass/models/item/`。
 - [主模型](<../src/main/resources/assets/archaeologycompass/models/item/archaeology_compass.json>) 通过 `minecraft:angle` overrides 选择原创帧模型，保持原有方向映射，并非直接引用原版指南针贴图。
 - [全帧预览](<archaeology_compass_preview.png>)。
 - [旋转动画](<archaeology_compass_rotation.gif>)。
-- [400×400 项目图标](<archaeology_compass_icon_400.png>) 已同步 V2 铜壳外观，与当前正式贴图保持一致。
+- [400×400 项目图标](<archaeology_compass_icon_400.png>) 按 16×16 贴图 20 倍整数放大生成，与当前正式贴图一致；因源图变小，图标内的像素块明显大于旧版。
 
 ![32 帧贴图全览](<archaeology_compass_preview.png>)
 

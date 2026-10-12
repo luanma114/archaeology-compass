@@ -38,7 +38,7 @@ Archaeology Compass adds a craftable copper compass that points toward the neare
 - **Shift for details.** Hold Shift over the item to see search rules, the server's scan range, and the current search status.
 - **Loaded chunks only.** Searching does not force distant chunks to load or generate.
 - **Configurable on the server.** Adjust the horizontal radius, vertical radius, and scan interval.
-- **Original artwork.** A 32×32, 32-frame copper compass with the balanced V2 shell: a subtle two-row copper side wall, a dark bottom edge, a pale-gold needle, and a green tail.
+- **Original artwork.** A 16×16, 32-frame copper compass drawn at the same pixel density as the vanilla compass, so it sits naturally beside vanilla items: a two-tone copper shell, a dark bottom edge, a pale-gold needle, and a teal tail.
 - **English and Simplified Chinese item text.**
 
 ## How to use
@@ -89,7 +89,7 @@ The server controls these settings, including the integrated server in single-pl
 
 ## Prerelease status and limitations
 
-**Version 0.1.3 is an early prerelease.** Target detection no longer depends on a block tag: any block whose block entity is a Minecraft `BrushableBlockEntity` or a subclass, and which still holds archaeology loot, is found — so custom archaeology blocks added by modpacks work without any data pack. Crafting, needle behaviour, the Shift tooltip and the V2 artwork were validated in a development client on a newly created world. The release JAR was also installed into an All the Mods 10 instance, where the compass located naturally generated Allthemodium archaeology blocks in an Ancient City.
+**Version 0.1.4 is an early prerelease.** The item sprite is drawn at 16×16, matching the pixel density of the vanilla compass and of other modded compasses, so it reads clearly at every GUI scale. 0.1.3 removed the block-tag whitelist: any block whose block entity is a Minecraft `BrushableBlockEntity` or a subclass, and which still holds archaeology loot, is found — so custom archaeology blocks added by modpacks work without any data pack. Crafting, needle behaviour, the Shift tooltip and the artwork were validated in a development client on a newly created world. The release JAR was also installed into an All the Mods 10 instance, where the compass located naturally generated Allthemodium archaeology blocks in an Ancient City.
 
 The following have **not** been verified for this release, and no claim is made about them: installation into a clean instance with no other content mods, dedicated-server multiplayer, JEI display, and performance under large scan ranges or high player counts. Expect possible issues and please report them.
 
@@ -132,7 +132,7 @@ Found a problem? Please [open an issue](https://github.com/luanma114/archaeology
 
 **版本要求：Minecraft 1.21.1、NeoForge 21.1.235 或更新的 1.21.1 兼容版本、Java 21。** 更新的 NeoForge 版本未逐一验证。多人游戏需要客户端和服务器都安装；此文件不支持 Forge、Fabric 或其他 Minecraft 版本。
 
-当前 **0.1.3 为兼容性更新预发布**。目标判定不再依赖方块标签：只要方块实体是原版刷扫方块 `BrushableBlockEntity` 或其子类，且仍有战利品，就会被找到——整合包的自定义考古方块因此开箱即用，不再需要数据包。已在新建存档的开发客户端中确认合成、指针指向附近目标、Shift 提示（含「已发现考古目标」状态）以及 V2 游戏内外观。
+当前 **0.1.4 为美术调整预发布**。物品贴图改为 **16×16**，与原版指南针和其他模组指南针的像素密度一致，在任何 GUI 缩放下都清晰可读。0.1.3 则移除了目标方块标签：只要方块实体是原版刷扫方块 `BrushableBlockEntity` 或其子类，且仍有战利品，就会被找到——整合包的自定义考古方块因此开箱即用，不再需要数据包。已在新建存档的开发客户端中确认合成、指针指向附近目标、Shift 提示（含「已发现考古目标」状态）以及游戏内外观。
 
 **另已在 All the Mods 10 实例中确认**：发布 JAR 装入后，罗盘在远古城市定位到自然生成的 Allthemodium 考古方块。
 
@@ -146,8 +146,8 @@ Found a problem? Please [open an issue](https://github.com/luanma114/archaeology
 
 | 字段 | 当前建议 |
 | --- | --- |
-| Upload file | [archaeologycompass-0.1.3.jar](<../build/libs/archaeologycompass-0.1.3.jar>) 已通过离线构建；上传 CurseForge 前仍建议完成干净实例验收，不把构建检查当作游戏测试 |
-| Display Name | Archaeology Compass 0.1.3 — Minecraft 1.21.1 (NeoForge) |
+| Upload file | [archaeologycompass-0.1.4.jar](<../build/libs/archaeologycompass-0.1.4.jar>) 已通过离线构建；上传 CurseForge 前仍建议完成干净实例验收，不把构建检查当作游戏测试 |
+| Display Name | Archaeology Compass 0.1.4 — Minecraft 1.21.1 (NeoForge) |
 | Release Type | 按目前验证状态选择 **Alpha**；完成单人回归和独服双客户端验证后再考虑 Beta，不直接标稳定 Release |
 | Game Version | 1.21.1 |
 | Mod Loader | NeoForge；不勾选 Forge 或 Fabric |
@@ -156,22 +156,22 @@ Found a problem? Please [open an issue](https://github.com/luanma114/archaeology
 
 如果上传前完成测试，应据实更新第 2、3 节的预发布状态，不沿用已经过时的“仍待验证”，也不在未测试时删掉限制。文件版本变化时同步改标题、文件字段和更新日志。
 
-### English changelog for 0.1.3（可直接粘贴到 Changelog）
+### English changelog for 0.1.4（可直接粘贴到 Changelog）
 
-# Archaeology Compass 0.1.3
+# Archaeology Compass 0.1.4
 
 Early prerelease for **Minecraft 1.21.1 / NeoForge**.
 
-## Changes since 0.1.2
+## Changes since 0.1.3
 
-- Target detection no longer uses a block tag. Any block whose block entity is a Minecraft `BrushableBlockEntity` or a subclass, and whose saved data still contains `LootTable` or `item`, is treated as a target.
-- Custom archaeology blocks added by modpacks now work out of the box, with no data pack required. For example, Allthemodium's `suspicious_clay` and `suspicious_soul_sand`, which appear in Ancient Cities in All the Mods 10, are found without extra configuration.
-- Removed the `archaeologycompass:archaeology_targets` block tag and the matching `ARCHAEOLOGY_TARGETS` field.
-- In vanilla the behaviour is unchanged: the only two blocks in the game that use the brushing mechanic are suspicious sand and suspicious gravel.
+- Redrew the item sprite at **16×16**. The compass now shares the pixel density of the vanilla compass and of other modded compasses, so it reads clearly at every GUI scale. The previous 32×32 sprite was crushed to 16 px whenever the GUI draws it at scale 1, losing the needle.
+- The 16 px budget keeps the two-tone copper shell, the dark teal dial, and the pale-gold needle with its teal tail. The second side-wall row, the dial ticks and the patina dots are gone — at 16 px they were sub-pixel noise.
+- The 400×400 project icon was regenerated from the new sprite.
+- Target scanning, needle behaviour, networking, crafting, and configuration values are unchanged from 0.1.3.
 
 ## Validation notice
 
-This is not a stable-release claim. Crafting, needle behaviour, the Shift tooltip, and the V2 artwork were validated in a development client on a newly created world. Installation from the release JAR in a clean instance, dedicated-server multiplayer, JEI display, and performance under large scan ranges or high player counts have not been verified, and no claims are made about them.
+This is not a stable-release claim. Crafting, needle behaviour, the Shift tooltip, and the artwork were validated in a development client on a newly created world. Installation from the release JAR in a clean instance, dedicated-server multiplayer, JEI display, and performance under large scan ranges or high player counts have not been verified, and no claims are made about them.
 
 ## 5. Custom License 字段文案（可复制）
 

@@ -11,7 +11,7 @@
 | 用途 | 文件 | 备注 |
 | --- | --- | --- |
 | 项目头像 | `docs/archaeology_compass_icon_400.png` | 400×400，上传到 Logo Image 字段 |
-| 上传的文件 | `build/libs/archaeologycompass-0.1.3.jar` | 72416 字节，sha256 `df00bdd3dc7e467896002e736a62f7e697b406328427aa000516bf8e53227a17` |
+| 上传的文件 | `build/libs/archaeologycompass-0.1.4.jar` | 60057 字节，sha256 `29a055880480435fabc490f989dd510365f7b16787131e0f6f304ea4723cf679` |
 | 首图 | `docs/screenshots/01-needle-pointing.png` | 指针指向可疑沙 |
 | 合成图 | `docs/screenshots/02-crafting.png` | 工作台合成 |
 | 提示图 | `docs/screenshots/03-shift-tooltip.png` | Shift 提示 |
@@ -21,8 +21,8 @@
 **上传前先核对 jar 的哈希**，确认传的是与 GitHub Release 一致的那一份：
 
 ```powershell
-Get-FileHash build\libs\archaeologycompass-0.1.3.jar -Algorithm SHA256
-# 应为 df00bdd3dc7e467896002e736a62f7e697b406328427aa000516bf8e53227a17
+Get-FileHash build\libs\archaeologycompass-0.1.4.jar -Algorithm SHA256
+# 应为 29a055880480435fabc490f989dd510365f7b16787131e0f6f304ea4723cf679
 ```
 
 ---
@@ -87,8 +87,8 @@ Get-FileHash build\libs\archaeologycompass-0.1.3.jar -Algorithm SHA256
 
 | 字段 | 填什么 |
 | --- | --- |
-| **Upload file** | `archaeologycompass-0.1.3.jar` |
-| **Display Name** | `Archaeology Compass 0.1.3 — Minecraft 1.21.1 (NeoForge)` |
+| **Upload file** | `archaeologycompass-0.1.4.jar` |
+| **Display Name** | `Archaeology Compass 0.1.4 — Minecraft 1.21.1 (NeoForge)` |
 | **Release Type** | 见下方说明，需要你决策 |
 | **Changelog** | 粘贴 [`CurseForge_项目页面文案.md`](CurseForge_项目页面文案.md) **第 4 节**的英文 changelog |
 | **Supported Version** | 游戏版本 `1.21.1`；Mod Loader 勾 **NeoForge** |
