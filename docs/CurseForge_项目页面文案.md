@@ -1,6 +1,6 @@
 # CurseForge 项目页面文案
 
-本稿对应当前 `0.1.2` GitHub 预发布版本，采用 V2 折中铜壳与同步的 400×400 项目图标；GitHub 预发布及附件已完成上传和核验，CurseForge 项目尚未创建或上传。构建与资源检查不代表游戏内验收，V2 外观、干净实例和联机等待测项目保留说明。只复制所需的公开文案，不要把编辑说明和待办清单整篇贴到项目页面。
+本稿对应 **`0.1.3`** 版本。CurseForge 项目已创建（ID `1733726`），`0.1.2` 的待审文件仍在审核队列中；本稿第 2、3 节的正文已按 `0.1.3` 的行为更新，**上传 `0.1.3` 时需同步替换项目描述**。构建与资源检查不代表游戏内验收，未验证项目按实际情况保留说明。只复制所需的公开文案，不要把编辑说明和待办清单整篇贴到项目页面。
 
 ## 1. 项目字段（作者填写）
 
@@ -89,13 +89,13 @@ The server controls these settings, including the integrated server in single-pl
 
 ## Prerelease status and limitations
 
-**Version 0.1.2 is an early prerelease focused on artwork.** It was validated in a development client on a newly created world: crafting, the needle pointing at a nearby target, the Shift tooltip including its "target found" state, and the V2 artwork in game were all confirmed.
+**Version 0.1.3 is an early prerelease.** Target detection no longer depends on a block tag: any block whose block entity is a Minecraft `BrushableBlockEntity` or a subclass, and which still holds archaeology loot, is found — so custom archaeology blocks added by modpacks work without any data pack. Crafting, needle behaviour, the Shift tooltip and the V2 artwork were validated in a development client on a newly created world.
 
 The following have **not** been verified for this release, and no claim is made about them: installation from the release JAR in a clean instance, dedicated-server multiplayer, JEI display, and performance under large scan ranges or high player counts. Expect possible issues and please report them.
 
 - Only loaded chunks within the configured range are searched.
 - Block changes and ordinary inventory changes are reflected on the next scan, not instantly.
-- Adding a third-party block to `archaeologycompass:archaeology_targets` is not enough by itself. Its block entity must be a Minecraft `BrushableBlockEntity` or a subclass and pass the mod's loot-state checks. Arbitrary custom archaeology implementations are not supported.
+- Third-party archaeology blocks are supported out of the box: any block whose block entity is a Minecraft `BrushableBlockEntity` or a subclass, and which still holds archaeology loot, is treated as a target. A block that merely looks like archaeology but does not use the vanilla brushing mechanic will not be found.
 
 ## Modpacks, license, and support
 
@@ -132,7 +132,7 @@ Found a problem? Please [open an issue](https://github.com/luanma114/archaeology
 
 **版本要求：Minecraft 1.21.1、NeoForge 21.1.235 或更新的 1.21.1 兼容版本、Java 21。** 更新的 NeoForge 版本未逐一验证。多人游戏需要客户端和服务器都安装；此文件不支持 Forge、Fabric 或其他 Minecraft 版本。
 
-当前 **0.1.2 为美术更新预发布**，采用两行铜制侧壁、一行暗色收边的 V2 折中外观，并同步项目图标；定位、配方和指针逻辑未改。已在新建存档的开发客户端中确认：合成、指针指向附近目标、Shift 提示（含「已发现考古目标」状态）以及 V2 游戏内外观。
+当前 **0.1.3 为兼容性更新预发布**。目标判定不再依赖方块标签：只要方块实体是原版刷扫方块 `BrushableBlockEntity` 或其子类，且仍有战利品，就会被找到——整合包的自定义考古方块因此开箱即用，不再需要数据包。已在新建存档的开发客户端中确认合成、指针指向附近目标、Shift 提示（含「已发现考古目标」状态）以及 V2 游戏内外观。
 
 以下项目**本次未做验证，页面不作任何相关声明**：发布 JAR 在干净实例中的安装、独立服务器多人联机、JEI 展示，以及大范围扫描与多人场景下的性能。JEI 不是必需依赖。
 
@@ -144,8 +144,8 @@ Found a problem? Please [open an issue](https://github.com/luanma114/archaeology
 
 | 字段 | 当前建议 |
 | --- | --- |
-| Upload file | [archaeologycompass-0.1.2.jar](<../build/libs/archaeologycompass-0.1.2.jar>) 已通过离线构建及版本、V2贴图、模型和许可检查；上传 CurseForge 前仍建议完成干净实例验收，不把构建检查当作游戏测试 |
-| Display Name | Archaeology Compass 0.1.2 — Minecraft 1.21.1 (NeoForge) |
+| Upload file | [archaeologycompass-0.1.3.jar](<../build/libs/archaeologycompass-0.1.3.jar>) 已通过离线构建；上传 CurseForge 前仍建议完成干净实例验收，不把构建检查当作游戏测试 |
+| Display Name | Archaeology Compass 0.1.3 — Minecraft 1.21.1 (NeoForge) |
 | Release Type | 按目前验证状态选择 **Alpha**；完成单人回归和独服双客户端验证后再考虑 Beta，不直接标稳定 Release |
 | Game Version | 1.21.1 |
 | Mod Loader | NeoForge；不勾选 Forge 或 Fabric |
@@ -154,18 +154,18 @@ Found a problem? Please [open an issue](https://github.com/luanma114/archaeology
 
 如果上传前完成测试，应据实更新第 2、3 节的预发布状态，不沿用已经过时的“仍待验证”，也不在未测试时删掉限制。文件版本变化时同步改标题、文件字段和更新日志。
 
-### English changelog for 0.1.2（可直接粘贴到 Changelog）
+### English changelog for 0.1.3（可直接粘贴到 Changelog）
 
-# Archaeology Compass 0.1.2
+# Archaeology Compass 0.1.3
 
 Early prerelease for **Minecraft 1.21.1 / NeoForge**.
 
-## Changes since 0.1.1
+## Changes since 0.1.2
 
-- Adopted the balanced V2 copper-shell textures across all 32 frames: a two-row side wall, a dark bottom edge, and a softer front seam.
-- Updated the 400×400 project icon to match the V2 artwork.
-- Synchronized artwork previews, the asset generator, project documentation, and CurseForge page copy.
-- Kept the existing target scanning, synchronization, recipe, and needle-angle behavior unchanged.
+- Target detection no longer uses a block tag. Any block whose block entity is a Minecraft `BrushableBlockEntity` or a subclass, and whose saved data still contains `LootTable` or `item`, is treated as a target.
+- Custom archaeology blocks added by modpacks now work out of the box, with no data pack required. For example, Allthemodium's `suspicious_clay` and `suspicious_soul_sand`, which appear in Ancient Cities in All the Mods 10, are found without extra configuration.
+- Removed the `archaeologycompass:archaeology_targets` block tag and the matching `ARCHAEOLOGY_TARGETS` field.
+- In vanilla the behaviour is unchanged: the only two blocks in the game that use the brushing mechanic are suspicious sand and suspicious gravel.
 
 ## Validation notice
 
@@ -218,7 +218,7 @@ CurseForge 项目页图片**无法从本地直接引用**，需先在网页端�
 
 ## 7. 发布前核对（内部清单，不粘贴到公开正文）
 
-- [x] 准备上传的 JAR 已重新构建（`build/libs/archaeologycompass-0.1.2.jar`）。
+- [x] 准备上传的 JAR 已重新构建（`build/libs/archaeologycompass-0.1.3.jar`）。
 - [ ] 该 JAR 在干净实例中安装验证 —— **未做**；公开正文已相应声明不作验证声明。
 - [x] 核对实际版本、文件标签、公开正文及 Changelog 一致。
 - [x] 测试合成、配方书、Shift 提示、指针方向（开发客户端 + 新建存档，证据见 `docs/验收清单.md`）。

@@ -144,7 +144,7 @@ src/main/resources/
 
 ## 考古罗盘：当前功能规则与未实现优化
 
-本章描述当前 `0.1.2` 代码行为；明确标为“未实现”的优化不是现有功能、配置或验收结论。后面的通用教程用于开发参考，不代表本项目已实现所有示例模块。
+本章描述当前 `0.1.3` 代码行为；明确标为“未实现”的优化不是现有功能、配置或验收结论。后面的通用教程用于开发参考，不代表本项目已实现所有示例模块。
 
 ### 功能目标
 
@@ -152,27 +152,26 @@ src/main/resources/
 
 ### 目标方块与兼容规则
 
-- 默认候选为原版 `minecraft:suspicious_sand`、`minecraft:suspicious_gravel`，由 [目标方块标签](<../src/main/resources/data/archaeologycompass/tags/block/archaeology_targets.json>) 定义。
-- 正式 Mod ID 已是 `archaeologycompass`，见 [gradle.properties](<../gradle.properties>) 和 [ExampleMod.java](<../src/main/java/com/luanma114/archaeologycompass/ExampleMod.java>)；标签 ID 为 `archaeologycompass:archaeology_targets`，不是 `archaeology_compass:archaeology_targets`，无需替换占位 ID。
-- [ArchaeologyCompassEvents.java](<../src/main/java/com/luanma114/archaeologycompass/ArchaeologyCompassEvents.java>) 要求候选同时属于该标签、方块实体是 `BrushableBlockEntity`（包括其子类），且保存的 NBT 中存在 `LootTable` 或 `item` 键。首次刷扫后由 `LootTable` 转为 `item` 时仍有效；完全刷出后两者均不存在，不再定位。
-- 其他模组或整合包可通过数据包向 `archaeologycompass:archaeology_targets` 添加候选方块，但**仅加入标签不足以兼容**，还须满足上述方块实体类型与 NBT 规则。任意自定义考古方块实体的适配未实现。
+- **判定不依赖方块标签。** [ArchaeologyCompassEvents.java](<../src/main/java/com/luanma114/archaeologycompass/ArchaeologyCompassEvents.java>) 只要求方块实体是 `BrushableBlockEntity`（包括其子类），且保存的 NBT 中存在 `LootTable` 或 `item` 键。首次刷扫后由 `LootTable` 转为 `item` 时仍有效；完全刷出后两者均不存在，不再定位。
+- 原版可疑沙子（`minecraft:suspicious_sand`）与可疑沙砾（`minecraft:suspicious_gravel`）本身就是 `BrushableBlockEntity` 的实例，因此在纯原版环境下这条规则等价于只认这两种方块。
+- 整合包与第三方模组添加的自定义考古方块，只要是 `BrushableBlockEntity` 的子类（例如 Allthemodium 的 `ATMBrushableBlockEntity`），**无需数据包或配置即可被识别**。仅名称相似却不使用刷扫机制的方块不会被误判。
+- 正式 Mod ID 为 `archaeologycompass`，见 [gradle.properties](<../gradle.properties>) 和 [ExampleMod.java](<../src/main/java/com/luanma114/archaeologycompass/ExampleMod.java>)。
 - 当前服务端配置只有水平半径、垂直半径、扫描间隔三项，没有最大扫描量或单 Tick 工作预算配置。
 
-[目标标签文件](<../src/main/resources/data/archaeologycompass/tags/block/archaeology_targets.json>) 的内容与位置：
+判定规则对应的代码：
 
-```json
-{
-  "replace": false,
-  "values": [
-    "minecraft:suspicious_sand",
-    "minecraft:suspicious_gravel"
-  ]
+```java
+private static boolean isValidArchaeologyTarget(ServerLevel level, BlockEntity blockEntity) {
+    if (!(blockEntity instanceof BrushableBlockEntity brushable)) {
+        return false;
+    }
+    CompoundTag data = brushable.saveWithoutMetadata(level.registryAccess());
+    return data.contains("LootTable") || data.contains("item");
 }
 ```
 
-```text
-src/main/resources/data/archaeologycompass/tags/block/archaeology_targets.json
-```
+> 历史说明：`0.1.2` 及更早版本曾要求候选方块额外属于 `archaeologycompass:archaeology_targets` 方块标签。该标签在 `0.1.3` 中已移除——它只是一层白名单，无法表达"排除某个方块"这一实际需求，却会让整合包作者误以为必须改数据包才能兼容。
+
 
 ### 定位与更新时序
 
@@ -236,14 +235,13 @@ Mod ID：archaeologycompass
 主模型：src/main/resources/assets/archaeologycompass/models/item/archaeology_compass.json
 帧模型：src/main/resources/assets/archaeologycompass/models/item/archaeology_compass_00.json 至 archaeology_compass_31.json
 原创纹理：src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_00.png 至 archaeology_compass_31.png
-方块标签：src/main/resources/data/archaeologycompass/tags/block/archaeology_targets.json
 ```
 
 ### 后续专项验收清单（不是已通过记录）
 
 以下保留为待执行检查；既有单人验收记录见历史快照，不据此勾选当前预发布的专项测试：
 
-- [ ] 默认仅定位符合 `BrushableBlockEntity` 与 `LootTable`/`item` 规则的可疑沙子与可疑沙砾。
+- [ ] 定位所有符合 `BrushableBlockEntity`（含子类）与 `LootTable`/`item` 规则的方块；纯原版环境下即可疑沙子与可疑沙砾。
 - [ ] 每次单 Tick 完整扫描后，在多个有效候选中选择最近目标。
 - [ ] 刷空、挖掘、离开范围或失去罗盘在下一周期更新；登录、换维度、重生按事件即时刷新。
 - [ ] 范围内无目标时持续旋转，首次空结果与等待结果提示可正确区分。
