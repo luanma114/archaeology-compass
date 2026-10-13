@@ -1,4 +1,4 @@
-"""Generate the project icon and the in-game mod list logo from the live V2 compass artwork.
+"""Generate the project icon and the in-game mod list logo from the live compass artwork.
 
 The project icon (400x400) is uploaded to CurseForge as the project avatar.
 The mod list logo (128x128) ships inside the JAR and is referenced by
@@ -18,13 +18,12 @@ ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / "src/main/resources/assets/archaeologycompass/textures/item/archaeology_compass_19.png"
 OUTPUT = ROOT / "docs/archaeology_compass_icon_400.png"
 SIZE = 400
-# In-game mod list logo: the compass alone, without the project-page frame.
 LOGO_OUTPUT = ROOT / "src/main/resources/archaeology_compass_logo.png"
 LOGO_SIZE = 128
 
 
 def load_sprite():
-    """Load the V2 compass frame, cropped to its non-transparent bounds."""
+    """Load the compass frame, cropped to its non-transparent bounds."""
     with Image.open(SOURCE) as source:
         sprite = source.convert("RGBA")
     bounds = sprite.getbbox()
@@ -63,22 +62,20 @@ def build_logo():
 
 
 def main():
-    # Render the backdrop on a 100-pixel grid to retain a pixel-art feel.
     backdrop = Image.new("RGB", (100, 100))
     for y in range(100):
         for x in range(100):
-            distance = math.hypot((x - 49.5) / 70, (y - 45) / 70)
+            distance = math.hypot((x - 44) / 65, (y - 40) / 65)
             light = max(0.0, 1.0 - distance) ** 1.4
             backdrop.putpixel((x, y), (
-                round(20 + 18 * light),
-                round(28 + 22 * light),
-                round(27 + 20 * light),
+                round(16 + 18 * light),
+                round(25 + 26 * light),
+                round(24 + 22 * light),
             ))
 
     draw = ImageDraw.Draw(backdrop)
-    # A quiet circular survey motif frames the compass without tiny text.
-    draw.ellipse((8, 8, 91, 91), outline="#354440", width=1)
-    draw.ellipse((12, 12, 87, 87), outline="#2D3C37", width=1)
+    draw.ellipse((8, 8, 91, 91), outline="#42564B", width=1)
+    draw.ellipse((12, 12, 87, 87), outline="#2C4038", width=1)
     for index in range(16):
         angle = index * math.tau / 16
         outer = (round(49.5 + math.sin(angle) * 41),
@@ -86,9 +83,8 @@ def main():
         inner_radius = 36 if index % 4 == 0 else 39
         inner = (round(49.5 + math.sin(angle) * inner_radius),
                  round(49.5 - math.cos(angle) * inner_radius))
-        draw.line((inner, outer), fill="#78684B" if index % 4 == 0 else "#435149")
+        draw.line((inner, outer), fill="#A28A5E" if index % 4 == 0 else "#506257")
 
-    # Copper corner marks remain legible in small project listings.
     for corner_x, corner_y, sign_x, sign_y in (
         (7, 7, 1, 1), (92, 7, -1, 1),
         (7, 92, 1, -1), (92, 92, -1, -1),
@@ -98,11 +94,9 @@ def main():
         draw.point((corner_x, corner_y), fill="#C58B58")
 
     icon = backdrop.resize((SIZE, SIZE), Image.Resampling.NEAREST).convert("RGBA")
-    # Integer scaling preserves the exact colors and shapes of the game art.
-    # The sprite is now 16x16, so 20x restores the on-canvas size that the
-    # former 32x32 source gave at 10x.
     sprite = load_sprite()
-    sprite = sprite.resize((sprite.width * 20, sprite.height * 20), Image.Resampling.NEAREST)
+    scale = 80 // max(sprite.width, sprite.height)
+    sprite = sprite.resize((sprite.width * scale * 4, sprite.height * scale * 4), Image.Resampling.NEAREST)
     x = (SIZE - sprite.width) // 2
     y = (SIZE - sprite.height) // 2 - 4
 
@@ -112,7 +106,6 @@ def main():
     shadow.alpha_composite(shadow_color, (x + 8, y + 12))
     icon = Image.alpha_composite(icon, shadow)
     icon.alpha_composite(sprite, (x, y))
-    # Opaque PNG avoids website background differences around the artwork.
     icon.convert("RGB").save(OUTPUT, optimize=True)
 
     with Image.open(OUTPUT) as saved:
